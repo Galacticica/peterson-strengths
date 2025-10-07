@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      :root {
+        --concordia-blue: #192C53;
+        --concordia-sky: #5A9DBF;
+        --concordia-slate: #646464;
+        --concordia-nimbus: #C8C8C8;
+        --concordia-wheat: #E2C172;
+        --concordia-white: #F8F4ED;
+        --concordia-clay: #B2402A;
+      }
+    </style>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        trix-toolbar [data-trix-button-group="block-tools"] { 
+            display: none;
+        }
+        
+        trix-toolbar [data-trix-button-group="file-tools"] { 
+            display: none;
+        }
+      </style>
+    <title>Site Title</title>
+</head>
+<body class="min-h-screen flex flex-col bg-white">
+    <header class="p-6" style="background-color: var(--concordia-blue); color: var(--concordia-white);">
+        <div class="flex flex-col items-center font-sans">
+            <h1>This is a header</h1>
+        </div>
+    </header>
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="text-white p-6 mt-4" style="background-color: var(--concordia-blue);">
+        <div class="flex flex-col items-center font-sans">
+            <p class="text-lg" style="color: var(--concordia-white);">© 2025</p>
+        </div>
+    </footer>
+</body>
+</html>
