@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django_browser_reload",
+    "django_vite",
     'accounts',
 ]
 
@@ -90,7 +91,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATICFILES_DIRS = [ BASE_DIR / "static" / "dist", BASE_DIR / "static" / "public" ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = '/media/'
@@ -105,3 +106,9 @@ LOGIN_URL = "/login/"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": DEBUG,
+    }
+}
