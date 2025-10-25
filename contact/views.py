@@ -30,8 +30,7 @@ def _format_email_body(cleaned_data):
     formatted_start = start_date.strftime("%B %d, %Y") if start_date else "N/A"
     formatted_end = end_date.strftime("%B %d, %Y") if end_date else "N/A"
     
-    return (
-        "A new message has been received from the contact form:\n\n"
+    return ("A new message has been received from the contact form:\n\n"
         f"Name: {cleaned_data.get('name', '')}\n"
         f"Email: {cleaned_data.get('email', '')}\n"
         f"Message: {cleaned_data.get('message', '')}\n"

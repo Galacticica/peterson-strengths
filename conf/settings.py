@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django_vite",
     'accounts',
     'contact',
+    'home',
 ]
 
 MIDDLEWARE = [
