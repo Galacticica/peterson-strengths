@@ -1,0 +1,21 @@
+{% csrf_token %}
+{{ form.non_field_errors }}
+<fieldset class="fieldset mb-4">
+    <legend class="fieldset-legend">Name</legend>
+    <input type="text" name="name" id="id_name" class="input input-bordered w-full mb-1" placeholder="Your name" value="{{ form.name.value|default_if_none:'' }}" />
+    <div class="label">Required</div>
+    {{ form.name.errors }}
+</fieldset>
+<fieldset class="fieldset mb-4">
+    <legend class="fieldset-legend">Email</legend>
+    <input type="email" name="email" id="id_email" class="input input-bordered w-full mb-1" placeholder="Your email" value="{{ form.email.value|default_if_none:'' }}" />
+    <div class="label">Required</div>
+    {{ form.email.errors }}
+</fieldset>
+<fieldset class="fieldset mb-4">
+    <legend class="fieldset-legend">Your Message</legend>
+    <textarea id="message" name="message" class="textarea h-24 w-full" placeholder="Type your message here...">{{ form.message.value|default_if_none:'' }}</textarea>
+    <div class="label">Required</div>
+    {{ form.message.errors }}
+</fieldset>
+<button class="btn" type="submit">Send Message</button>

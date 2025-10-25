@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>About Peterson Lifts</title>{% endblock %}
+
+{% block content %}
+<h2 class="text-4xl font-bold mb-4 flex justify-center">Who I Am</h2>
+
+
+<div class="flex justify-center w-full">
+    <div class="max-w-4xl w-full">
+        <img src="{% static 'will_pfp.jpg' %}" class="float-left w-40 h-auto mr-4 mb-2 rounded-lg" />
+        <p class="text-lg">
+            I'm currently ranked the #1 collegiate 308-lb powerlifter in the country, with over 7 years of dedicated powerlifting experience.
+            My journey began in high school, where I won two state championships and a national title, and it has since evolved into a lifelong passion for strength and performance. 
+            Over the years, I've trained under multiple coaching systems, gaining a deep understanding of different methodologies and what truly works for long-term progress. 
+            After overcoming a serious injury, I developed an even greater respect for smart, individualized programming and proper recovery — principles that I now bring into my coaching. 
+            Whether you're chasing a new PR or stepping on the platform for the first time, I'm here to help you train with purpose, stay healthy, and unlock your full potential. 
+        </p>
+    </div>
+</div>
+
+<div class="py-16"></div>
+
+<h2 class="text-3xl font-bold mb-4 flex justify-center">Contact Me</h2>
+
+<div class="flex justify-center w-full">
+    <div class="max-w-4xl w-full">
+        <p class="text-lg mb-6">
+            If you're interested in personalized coaching, have questions about training, or just want to connect, feel free to reach out! 
+        </p>
+            <form method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <fieldset class="fieldset mb-4">
+                <legend class="fieldset-legend">Name</legend>
+                <input type="text" name="name" id="id_name" class="input input-bordered w-full mb-1" placeholder="Your name" />
+                <div class="label">Required</div>
+                {{ form.name.errors }}
+            </fieldset>
+            <fieldset class="fieldset mb-4">
+                <legend class="fieldset-legend">Email</legend>
+                <input type="email" name="email" id="id_email" class="input input-bordered w-full mb-1" placeholder="Your email" />
+                <div class="label">Required</div>
+                {{ form.email.errors }}
+            </fieldset>
+            <fieldset class="fieldset mb-4">
+                <legend class="fieldset-legend">Your Message</legend>
+                <textarea id="message" name="message" class="textarea h-24 w-full" placeholder="Type your message here..."></textarea>
+                <div class="label">Required</div>
+            </fieldset>
+            <button class="btn" type="submit">Send Message</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

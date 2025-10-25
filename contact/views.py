@@ -1,3 +1,43 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.views.generic.edit import FormView
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.views import View
+from .forms import ContactForm
 
-# Create your views here.
+
+def contact_view(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            _send_email(form.cleaned_data, request)
+            if request.headers.get("HX-Request"):
+                return render(request, "contact/_form_partial.html", {
+                    "form": ContactForm(),
+                    "success": True
+                })
+            return redirect("contact")
+    else:
+        form = ContactForm()
+    if request.headers.get("HX-Request"):
+        return render(request, "contact/_form_partial.html", {"form": form})
+    return render(request, "contact/about.html", {"form": form})
+    
+def _format_email_body(cleaned_data):
+    """Format the email body with submission details."""
+    start_date = cleaned_data.get("start_date")
+    end_date = cleaned_data.get("end_date")
+    formatted_start = start_date.strftime("%B %d, %Y") if start_date else "N/A"
+    formatted_end = end_date.strftime("%B %d, %Y") if end_date else "N/A"
+    
+    return (
+        "A new message has been received from the contact form:\n\n"
+        f"Name: {cleaned_data.get('name', '')}\n"
+        f"Email: {cleaned_data.get('email', '')}\n"
+        f"Message: {cleaned_data.get('message', '')}\n"
+    )
+
+def _send_email(cleaned_data, request):
+    email_body = _format_email_body(cleaned_data)
+    # Implement email sending logic here
+    print("Sending email with body:\n", email_body)
