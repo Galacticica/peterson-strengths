@@ -20,7 +20,7 @@ def contact_view(request):
     else:
         form = ContactForm()
     if request.headers.get("HX-Request"):
-        return render(request, "contact/_form_partial.html", {"form": form})
+        return render(request, "contact/partials/_form_partial.html", {"form": form})
     return render(request, "contact/about.html", {"form": form})
     
 def _format_email_body(cleaned_data):
