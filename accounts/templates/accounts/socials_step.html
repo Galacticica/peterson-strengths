@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Social Media</h2>
+  <form method="post">
+    {% csrf_token %}
+    
+    {{ social_formset.management_form }}
+    <div id="social-formset">
+      {% for form in social_formset %}
+        <div class="social-form mb-4 p-4 border rounded">
+          {% for field in form %}
+            {% if field.name != 'id' and field.name != 'user' and field.name != 'DELETE' %}
+              <div class="mb-4 w-full">
+                <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+                {% if field.field.widget.input_type == 'select' %}
+                  {{ field }}
+                {% elif field.field.widget.input_type == 'textarea' %}
+                  <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value|default:'' }}</textarea>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="input input-bordered w-full" />
+                {% endif %}
+                {% if field.errors %}
+                  <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% elif field.name == 'id' %}
+              {{ field }}
+            {% elif field.name == 'DELETE' %}
+              <input type="hidden" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
+            {% endif %}
+          {% endfor %}
+          <div class="text-right delete-button-container">
+            <button type="button" class="btn btn-error btn-sm delete-social">Remove</button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <button type="button" id="add-social" class="btn btn-secondary mb-4">Add Social Media</button>
+    
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'equipment_step' %}" class="btn btn-secondary">Back</a>
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-social');
+    const formsetContainer = document.getElementById('social-formset');
+    const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    
+    // Hide all empty forms on page load (forms without ID and without data)
+    const existingForms = document.querySelectorAll('.social-form');
+    existingForms.forEach(form => {
+        const idField = form.querySelector('input[name$="-id"]');
+        const hasId = idField && idField.value;
+        
+        // Check if form has any data
+        const hasData = Array.from(form.querySelectorAll('input[type="text"], input[type="url"], textarea, select')).some(input => {
+            return input.value && input.value.trim() !== '';
+        });
+        
+        // Hide forms that have no ID and no data
+        if (!hasId && !hasData) {
+            form.style.display = 'none';
+        }
+    });
+    
+    // Update visibility of delete buttons
+    function updateDeleteButtons() {
+        const visibleForms = document.querySelectorAll('.social-form:not([style*="display: none"])');
+        visibleForms.forEach(form => {
+            const deleteContainer = form.querySelector('.delete-button-container');
+            if (visibleForms.length >= 1) {
+                deleteContainer.style.display = 'block';
+            } else {
+                deleteContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    addButton.addEventListener('click', function() {
+        // Check if there's a hidden empty form we can reuse
+        const hiddenEmptyForm = Array.from(document.querySelectorAll('.social-form')).find(form => {
+            return form.style.display === 'none' && !form.querySelector('input[name$="-id"]').value;
+        });
+        
+        if (hiddenEmptyForm) {
+            hiddenEmptyForm.style.display = 'block';
+            updateDeleteButtons();
+            return;
+        }
+        
+        const formCount = document.querySelectorAll('.social-form').length;
+        const firstForm = document.querySelector('.social-form');
+        
+        if (!firstForm) return;
+        
+        const newForm = firstForm.cloneNode(true);
+        
+        const formRegex = new RegExp('form-(\\d+)-', 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        
+        newForm.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(input => {
+            input.value = '';
+        });
+        
+        newForm.querySelectorAll('select').forEach(select => {
+            select.selectedIndex = 0;
+        });
+        
+        const idField = newForm.querySelector('input[name$="-id"]');
+        if (idField) {
+            idField.value = '';
+        }
+        
+        const deleteField = newForm.querySelector('input[name$="-DELETE"]');
+        if (deleteField) {
+            deleteField.value = '';
+        }
+        
+        newForm.style.display = 'block';
+        
+        const deleteBtn = newForm.querySelector('.delete-social');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                deleteSocialForm(newForm);
+            });
+        }
+        
+        formsetContainer.appendChild(newForm);
+        totalFormsInput.value = formCount + 1;
+        updateDeleteButtons();
+    });
+    
+    document.querySelectorAll('.delete-social').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = btn.closest('.social-form');
+            deleteSocialForm(form);
+        });
+    });
+    
+    function deleteSocialForm(formElement) {
+        const deleteInput = formElement.querySelector('input[name$="-DELETE"]');
+        const idInput = formElement.querySelector('input[name$="-id"]');
+        
+        const visibleForms = document.querySelectorAll('.social-form:not([style*="display: none"])').length;
+        
+        // If the form has an id (existing record), mark for deletion
+        if (idInput && idInput.value) {
+            deleteInput.value = 'on';
+            formElement.style.display = 'none';
+        } else {
+            // If it's the last visible form, just hide it instead of removing
+            if (visibleForms === 1) {
+                formElement.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(input => {
+                    input.value = '';
+                });
+                formElement.querySelectorAll('select').forEach(select => {
+                    select.selectedIndex = 0;
+                });
+                formElement.style.display = 'none';
+            } else {
+                // If there are multiple forms, remove it from the DOM
+                formElement.remove();
+                // Update TOTAL_FORMS count
+                const allForms = document.querySelectorAll('.social-form').length;
+                totalFormsInput.value = allForms;
+            }
+        }
+        updateDeleteButtons();
+    }
+    
+    // Initial update of delete buttons
+    updateDeleteButtons();
+});
+</script>
+{% endblock %}

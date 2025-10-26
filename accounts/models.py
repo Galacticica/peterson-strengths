@@ -171,12 +171,19 @@ class VideoLink(models.Model):
 
 class SocialMedia(models.Model):
     """Social media model to store user's social media links."""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='social_media')
-    instagram = models.URLField(blank=True, null=True)
-    facebook = models.URLField(blank=True, null=True)
-    tiktok = models.URLField(blank=True, null=True)
-    twitter = models.URLField(blank=True, null=True)
-    youtube = models.URLField(blank=True, null=True)
+
+    PLATFORMS = [
+        ('instagram', 'Instagram'),
+        ('facebook', 'Facebook'),
+        ('twitter', 'Twitter'),
+        ('tiktok', 'TikTok'),
+        ('youtube', 'YouTube'),
+        ('snapchat', 'Snapchat'),
+        ('other', 'Other'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_media')
+    platform = models.CharField(max_length=100, choices=PLATFORMS)
+    link = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.user}'s Social Media Links"

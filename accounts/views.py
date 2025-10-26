@@ -277,10 +277,93 @@ def preference_step(request):
                 preference_instance.save()
             else:
                 preference_instance = models.CoachingPreference.objects.create(user=request.user, **preference_data)
-            return redirect("contact")  
+            return redirect("equipment_step")  
     else:
         form = forms.CoachingPreferenceForm(initial={
             field: getattr(preference_instance, field)
             for field in forms.CoachingPreferenceForm.base_fields
         } if preference_instance else None)
     return render(request, "accounts/preference_step.html", {"form": form})
+
+def equipment_step(request):
+    '''
+    Handle user equipment information step.
+    If equipment data exists, pre-fill the forms with existing data.
+    Uses a formset for equipment items.
+    '''
+
+    EquipmentFormSet = modelformset_factory(
+        models.Equipment,
+        form=forms.EquipmentForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
+    profile_instance = models.Profile.objects.filter(user=request.user).first()
+
+    if request.method == "POST":
+        gear_form = forms.GearForm(request.POST)
+        equipment_formset = EquipmentFormSet(request.POST, queryset=models.Equipment.objects.filter(user=request.user))
+        if gear_form.is_valid() and equipment_formset.is_valid():
+            gear_data = gear_form.cleaned_data
+            if profile_instance:
+                profile_instance.training_environment = gear_data['training_environment']
+                profile_instance.lifting_gear = gear_data['lifting_gear']
+                profile_instance.save()
+            else:
+                profile_instance = models.Profile.objects.create(
+                    user=request.user,
+                    training_environment=gear_data['training_environment'],
+                    lifting_gear=gear_data['lifting_gear']
+                )
+            instances = equipment_formset.save(commit=False)
+            for instance in instances:
+                instance.user = request.user
+                instance.save()
+            for obj in equipment_formset.deleted_objects:
+                obj.delete()
+            return redirect("socials_step")
+    else:
+        initial_data = {}
+        if profile_instance:
+            if profile_instance.training_environment:
+                initial_data['training_environment'] = profile_instance.training_environment
+            if profile_instance.lifting_gear is not None:
+                initial_data['lifting_gear'] = profile_instance.lifting_gear
+        gear_form = forms.GearForm(initial=initial_data if initial_data else None)
+        equipment_formset = EquipmentFormSet(queryset=models.Equipment.objects.filter(user=request.user))
+
+    return render(request, "accounts/equipment_step.html", {
+        "gear_form": gear_form,
+        "equipment_formset": equipment_formset,
+    })
+
+def socials_step(request):
+    '''
+    Handle user social media information step.
+    If social media data exists, pre-fill the forms with existing data.
+    Uses a formset for social media links.
+    '''
+
+    SocialMediaFormSet = modelformset_factory(
+        models.SocialMedia,
+        form=forms.SocialMediaForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
+    if request.method == "POST":
+        social_formset = SocialMediaFormSet(request.POST, queryset=models.SocialMedia.objects.filter(user=request.user))
+        if social_formset.is_valid():
+            instances = social_formset.save(commit=False)
+            for instance in instances:
+                instance.user = request.user
+                instance.save()
+            for obj in social_formset.deleted_objects:
+                obj.delete()
+            return redirect("/")  
+    else:
+        social_formset = SocialMediaFormSet(queryset=models.SocialMedia.objects.filter(user=request.user))
+    return render(request, "accounts/socials_step.html", {"social_formset": social_formset})

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate as auth_authenticate
-from .models import PreviousCoach, Goal, Injury, Equipment, VideoLink
+from .models import PreviousCoach, Goal, Injury, Equipment, VideoLink, SocialMedia
 
 
 class LoginForm(forms.Form):
@@ -283,37 +283,6 @@ class CoachingPreferenceForm(forms.Form):
         cleaned_data = super().clean()
         return cleaned_data
     
-class SocialMediaForm(forms.Form):
-    instagram = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={"placeholder": "Instagram URL", "class": "form-control"}),
-        label="Instagram"
-    )
-    facebook = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={"placeholder": "Facebook URL", "class": "form-control"}),
-        label="Facebook"
-    )
-    tiktok = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={"placeholder": "TikTok URL", "class": "form-control"}),
-        label="TikTok"
-    )
-    twitter = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={"placeholder": "Twitter URL", "class": "form-control"}),
-        label="Twitter"
-    )
-    youtube = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={"placeholder": "YouTube URL", "class": "form-control"}),
-        label="YouTube"
-    )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
-    
 class GearForm(forms.Form):
     training_environment = forms.CharField(
         max_length=255,
@@ -327,6 +296,14 @@ class GearForm(forms.Form):
         label="Do you use lifting gear? (e.g., belts, wraps)"
     )
 
+class SocialMediaForm(forms.ModelForm):
+    class Meta:
+        model = SocialMedia
+        fields = ['platform', 'link']
+        widgets = {
+            'platform': forms.Select(attrs={"class": "form-control"}),
+            'link': forms.URLInput(attrs={"placeholder": "Social Media Link URL", "class": "form-control"}),
+        }
 
 class PreviousCoachForm(forms.ModelForm):
     class Meta:
