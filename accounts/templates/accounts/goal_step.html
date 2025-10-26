@@ -1,79 +1,122 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="max-w-xl mx-auto p-6 rounded shadow">
-	<h2 class="text-2xl font-bold mb-4">Your Goals</h2>
-	<form method="post">
-		{% csrf_token %}
-		<div id="goals-container">
-			{% for form in goal_formset %}
-			<div class="goal-field flex items-center mb-2">
-				{% for field in form %}
-					{% if field.name == 'type' %}
-						<div class="form-group flex flex-col items-start">
-							<label for="{{ field.id_for_label }}" class="font-semibold mb-1">Goal Type</label>
-							{{ field }}
-						</div>
-					{% elif field.field.widget.input_type != 'checkbox' %}
-						<div class="form-group">{{ field }}</div>
-					{% endif %}
-				{% endfor %}
-				{% if form.fields.DELETE %}
-					<input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" style="display:none;" class="delete-checkbox">
-				{% endif %}
-				<button type="button" class="delete-goal btn btn-danger ml-2" onclick="deleteGoal(this)" style="display:none;">Delete</button>
-			</div>
-			{% endfor %}
-		</div>
-		<button type="button" id="add-goal" class="btn btn-secondary mt-2">Add Goal</button>
-		{{ goal_formset.management_form }}
-		<div class="flex justify-between mt-6">
-			<a href="{% url 'experience_step' %}" class="btn btn-secondary">Back</a>
-			<button type="submit" class="btn btn-primary">Next</button>
-		</div>
-	</form>
+  <h2 class="text-2xl font-bold mb-4">Your Goals</h2>
+  <form method="post">
+    {% csrf_token %}
+    
+    {{ goal_formset.management_form }}
+    <div id="goal-formset">
+      {% for form in goal_formset %}
+        <div class="goal-form mb-4 p-4 border rounded">
+          {% for field in form %}
+            {% if field.name != 'id' and field.name != 'user' and field.name != 'DELETE' %}
+              <div class="mb-4 w-full">
+                <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+                {% if field.field.widget.input_type == 'select' %}
+                  {{ field }}
+                {% elif field.field.widget.input_type == 'textarea' %}
+                  <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value|default:'' }}</textarea>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="input input-bordered w-full" />
+                {% endif %}
+                {% if field.errors %}
+                  <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% elif field.name == 'id' %}
+              {{ field }}
+            {% elif field.name == 'DELETE' %}
+              <input type="hidden" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
+            {% endif %}
+          {% endfor %}
+          {% if goal_formset.can_delete %}
+            <div class="text-right">
+              <button type="button" class="btn btn-error btn-sm delete-goal">Remove Goal</button>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <button type="button" id="add-goal" class="btn btn-secondary mb-4">Add Another Goal</button>
+    
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'experience_step' %}" class="btn btn-secondary">Back</a>
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </form>
 </div>
+
 <script>
-	function updateDeleteButtons() {
-		const fields = document.querySelectorAll('.goal-field');
-		fields.forEach((field, idx) => {
-			const delBtn = field.querySelector('.delete-goal');
-			delBtn.style.display = fields.length > 1 ? '' : 'none';
-		});
-	}
-	function deleteGoal(btn) {
-		const goalField = btn.parentElement;
-		const deleteCheckbox = goalField.querySelector('.delete-checkbox');
-		if (deleteCheckbox) {
-			deleteCheckbox.checked = true;
-			goalField.style.display = 'none';
-		}
-		updateDeleteButtons();
-		updateFormIndexes();
-	}
-	function updateFormIndexes() {
-		const fields = document.querySelectorAll('.goal-field');
-		const totalForms = document.getElementById('id_form-TOTAL_FORMS');
-		if (totalForms) totalForms.value = fields.length;
-		fields.forEach((field, idx) => {
-			field.querySelectorAll('input, select, textarea').forEach(el => {
-				if (el.name) el.name = el.name.replace(/form-(\d+)-/, `form-${idx}-`);
-				if (el.id) el.id = el.id.replace(/form-(\d+)-/, `form-${idx}-`);
-			});
-		});
-	}
-	document.getElementById('add-goal').addEventListener('click', function() {
-		const container = document.getElementById('goals-container');
-		const fields = container.querySelectorAll('.goal-field');
-		const newField = fields[0].cloneNode(true);
-		newField.querySelectorAll('input, select, textarea').forEach(el => {
-			if (el.type === 'text' || el.tagName === 'TEXTAREA') el.value = '';
-			if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-		});
-		container.appendChild(newField);
-		updateDeleteButtons();
-		updateFormIndexes();
-	});
-	updateDeleteButtons();
-	updateFormIndexes();
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-goal');
+    const formsetContainer = document.getElementById('goal-formset');
+    const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    
+    let emptyFormIndex = parseInt(totalFormsInput.value);
+    
+    addButton.addEventListener('click', function() {
+        const formCount = document.querySelectorAll('.goal-form').length;
+        const newForm = document.querySelector('.goal-form').cloneNode(true);
+        
+        const formRegex = new RegExp('form-(\\d+)-', 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        
+        newForm.querySelectorAll('input[type="text"], textarea').forEach(input => {
+            input.value = '';
+        });
+        
+        const idField = newForm.querySelector('input[name$="-id"]');
+        if (idField) {
+            idField.value = '';
+        }
+        
+        const deleteField = newForm.querySelector('input[name$="-DELETE"]');
+        if (deleteField) {
+            deleteField.value = '';
+        }
+        
+        const deleteBtn = newForm.querySelector('.delete-goal');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                deleteGoalForm(newForm);
+            });
+        }
+        
+        formsetContainer.appendChild(newForm);
+        totalFormsInput.value = formCount + 1;
+    });
+    
+    document.querySelectorAll('.delete-goal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = btn.closest('.goal-form');
+            deleteGoalForm(form);
+        });
+    });
+    
+    function deleteGoalForm(formElement) {
+        const deleteInput = formElement.querySelector('input[name$="-DELETE"]');
+        const idInput = formElement.querySelector('input[name$="-id"]');
+        
+        const visibleForms = document.querySelectorAll('.goal-form:not([style*="display: none"])').length;
+        
+        if (visibleForms === 1 && (!idInput || !idInput.value)) {
+            formElement.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                input.value = '';
+            });
+            return;
+        }
+        
+        if (idInput && idInput.value) {
+            deleteInput.value = 'on';
+            formElement.style.display = 'none';
+        } else {
+            formElement.remove();
+            const remainingForms = document.querySelectorAll('.goal-form:not([style*="display: none"])').length;
+            totalFormsInput.value = remainingForms;
+        }
+    }
+});
 </script>
 {% endblock %}

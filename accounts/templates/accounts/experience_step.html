@@ -4,79 +4,149 @@
   <h2 class="text-2xl font-bold mb-4">Experience & Previous Coaches</h2>
   <form method="post">
     {% csrf_token %}
-    {# Only render fields except checkboxes from exp_form #}
     {% for field in exp_form %}
-      {% if field.field.widget.input_type != 'checkbox' %}
-        <div class="form-group">{{ field }}</div>
-      {% endif %}
+      <div class="mb-4 w-full">
+        <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+        {% if field.name == 'dob' %}
+          {% if field.value %}
+            {% with field.value|stringformat:'s' as dob_str %}
+              <input type="date" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ dob_str|slice:':10' }}" class="input input-bordered w-full" />
+            {% endwith %}
+          {% else %}
+            <input type="date" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="input input-bordered w-full" />
+          {% endif %}
+        {% elif field.field.widget.input_type == 'select' %}
+          {{ field }}
+        {% elif field.field.widget.input_type == 'textarea' %}
+          <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value }}</textarea>
+        {% elif field.field.widget.input_type == 'checkbox' %}
+          <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="checkbox"> {{ field.label }}
+        {% else %}
+          <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value }}" class="input input-bordered w-full" />
+        {% endif %}
+        {% if field.errors %}
+          <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+        {% endif %}
+      </div>
     {% endfor %}
-    <h3 class="text-xl font-semibold mt-6 mb-2">Previous Coaches</h3>
-      <div id="coaches-container">
-        {% for form in coach_formset %}
-          <div class="coach-field flex items-center mb-2">
-            {% for field in form %}
-              {% if field.field.widget.input_type != 'checkbox' %}
-                <div class="form-group">{{ field }}</div>
-              {% endif %}
-            {% endfor %}
-            {# Render the hidden DELETE field for Django formset #}
-            {% if form.fields.DELETE %}
-              <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" style="display:none;" class="delete-checkbox">
+    
+    <h3 class="text-xl font-semibold mt-6 mb-4">Previous Coaches</h3>
+    
+    {{ coach_formset.management_form }}
+    <div id="coach-formset">
+      {% for form in coach_formset %}
+        <div class="coach-form mb-4 p-4 border rounded">
+          {% for field in form %}
+            {% if field.name != 'id' and field.name != 'user' and field.name != 'DELETE' %}
+              <div class="mb-4 w-full">
+                <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                  <div class="flex items-center">
+                    <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="checkbox" {% if field.value %}checked{% endif %}>
+                    <label for="{{ field.id_for_label }}" class="ml-2">{{ field.label }}</label>
+                  </div>
+                {% elif field.field.widget.input_type == 'textarea' %}
+                  <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value|default:'' }}</textarea>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="input input-bordered w-full" />
+                {% endif %}
+                {% if field.errors %}
+                  <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% elif field.name == 'id' %}
+              {{ field }}
+            {% elif field.name == 'DELETE' %}
+              <input type="hidden" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
             {% endif %}
-            <button type="button" class="delete-coach btn btn-danger ml-2" onclick="deleteCoach(this)" style="display:none;">Delete</button>
-          </div>
-        {% endfor %}
-      </div>
-      <button type="button" id="add-coach" class="btn btn-secondary mt-2">Add Coach</button>
-      {{ coach_formset.management_form }}
-      <div class="flex justify-between mt-6">
-        <a href="{% url 'profile_step' %}" class="btn btn-secondary">Back</a>
-        <button type="submit" class="btn btn-primary">Next</button>
-      </div>
-      <script>
-        function updateDeleteButtons() {
-          const fields = document.querySelectorAll('.coach-field');
-          fields.forEach((field, idx) => {
-            const delBtn = field.querySelector('.delete-coach');
-            delBtn.style.display = fields.length > 1 ? '' : 'none';
-          });
-        }
-        function deleteCoach(btn) {
-          const coachField = btn.parentElement;
-          const deleteCheckbox = coachField.querySelector('.delete-checkbox');
-          if (deleteCheckbox) {
-            deleteCheckbox.checked = true;
-            coachField.style.display = 'none';
-          }
-          updateDeleteButtons();
-          updateFormIndexes();
-        }
-        function updateFormIndexes() {
-          const fields = document.querySelectorAll('.coach-field');
-          const totalForms = document.getElementById('id_form-TOTAL_FORMS');
-          if (totalForms) totalForms.value = fields.length;
-          fields.forEach((field, idx) => {
-            field.querySelectorAll('input, select, textarea').forEach(el => {
-              if (el.name) el.name = el.name.replace(/form-(\d+)-/, `form-${idx}-`);
-              if (el.id) el.id = el.id.replace(/form-(\d+)-/, `form-${idx}-`);
-            });
-          });
-        }
-        document.getElementById('add-coach').addEventListener('click', function() {
-          const container = document.getElementById('coaches-container');
-          const fields = container.querySelectorAll('.coach-field');
-          const newField = fields[0].cloneNode(true);
-          newField.querySelectorAll('input, select, textarea').forEach(el => {
-            if (el.type === 'text' || el.tagName === 'TEXTAREA') el.value = '';
-            if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-          });
-          container.appendChild(newField);
-          updateDeleteButtons();
-          updateFormIndexes();
-        });
-        updateDeleteButtons();
-        updateFormIndexes();
-      </script>
+          {% endfor %}
+          {% if coach_formset.can_delete %}
+            <div class="text-right">
+              <button type="button" class="btn btn-error btn-sm delete-coach">Remove Coach</button>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <button type="button" id="add-coach" class="btn btn-secondary mb-4">Add Another Coach</button>
+    
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'profile_step' %}" class="btn btn-secondary">Back</a>
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
   </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-coach');
+    const formsetContainer = document.getElementById('coach-formset');
+    const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    
+    let emptyFormIndex = parseInt(totalFormsInput.value);
+    
+    addButton.addEventListener('click', function() {
+        const formCount = document.querySelectorAll('.coach-form').length;
+        const newForm = document.querySelector('.coach-form').cloneNode(true);
+        
+        const formRegex = new RegExp('form-(\\d+)-', 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        
+        newForm.querySelectorAll('input[type="text"], textarea').forEach(input => {
+            input.value = '';
+        });
+        
+        const idField = newForm.querySelector('input[name$="-id"]');
+        if (idField) {
+            idField.value = '';
+        }
+        
+        const deleteField = newForm.querySelector('input[name$="-DELETE"]');
+        if (deleteField) {
+            deleteField.value = '';
+        }
+        
+        const deleteBtn = newForm.querySelector('.delete-coach');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                deleteCoachForm(newForm);
+            });
+        }
+        
+        formsetContainer.appendChild(newForm);
+        totalFormsInput.value = formCount + 1;
+    });
+    
+    document.querySelectorAll('.delete-coach').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = btn.closest('.coach-form');
+            deleteCoachForm(form);
+        });
+    });
+    
+    function deleteCoachForm(formElement) {
+        const deleteInput = formElement.querySelector('input[name$="-DELETE"]');
+        const idInput = formElement.querySelector('input[name$="-id"]');
+        
+        const visibleForms = document.querySelectorAll('.coach-form:not([style*="display: none"])').length;
+        
+        if (visibleForms === 1 && (!idInput || !idInput.value)) {
+            formElement.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                input.value = '';
+            });
+            return;
+        }
+        
+        if (idInput && idInput.value) {
+            deleteInput.value = 'on';
+            formElement.style.display = 'none';
+        } else {
+            formElement.remove();
+            const remainingForms = document.querySelectorAll('.coach-form:not([style*="display: none"])').length;
+            totalFormsInput.value = remainingForms;
+        }
+    }
+});
+</script>
 {% endblock %}

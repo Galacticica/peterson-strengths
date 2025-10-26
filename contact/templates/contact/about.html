@@ -25,31 +25,37 @@
 <h2 class="text-3xl font-bold mb-4 flex justify-center">Contact Me</h2>
 
 <div class="flex justify-center w-full">
-    <div class="max-w-4xl w-full">
+    <div class="max-w-xl mx-auto p-6 rounded shadow">
         <p class="text-lg mb-6">
             If you're interested in personalized coaching, have questions about training, or just want to connect, feel free to reach out! 
         </p>
-            <form method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML">
+        <form method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML">
             {% csrf_token %}
             {{ form.non_field_errors }}
-            <fieldset class="fieldset mb-2">
-                <legend class="fieldset-legend">Name</legend>
-                <input type="text" name="name" id="id_name" class="input input-bordered w-full mb-1" placeholder="Your name" />
-                <div class="label">Required</div>
-                {{ form.name.errors }}
-            </fieldset>
-            <fieldset class="fieldset mb-2">
-                <legend class="fieldset-legend">Email</legend>
-                <input type="email" name="email" id="id_email" class="input input-bordered w-full mb-1" placeholder="Your email" />
-                <div class="label">Required</div>
-                {{ form.email.errors }}
-            </fieldset>
-            <fieldset class="fieldset mb-2">
-                <legend class="fieldset-legend">Your Message</legend>
-                <textarea id="message" name="message" class="textarea h-24 w-full" placeholder="Type your message here..."></textarea>
-                <div class="label">Required</div>
-            </fieldset>
-            <button class="btn" type="submit">Send Message</button>
+            <div class="mb-4 w-full">
+                <label for="id_name" class="block font-semibold mb-1">Name</label>
+                <input type="text" name="name" id="id_name" class="input input-bordered w-full" placeholder="Your name" />
+                {% if form.name.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-4 w-full">
+                <label for="id_email" class="block font-semibold mb-1">Email</label>
+                <input type="email" name="email" id="id_email" class="input input-bordered w-full" placeholder="Your email" />
+                {% if form.email.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-4 w-full">
+                <label for="id_message" class="block font-semibold mb-1">Your Message</label>
+                <textarea id="id_message" name="message" class="textarea textarea-bordered w-full" rows="4" placeholder="Type your message here..."></textarea>
+                {% if form.message.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ form.message.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="flex justify-between mt-6">
+                <button class="btn btn-primary" type="submit">Send Message</button>
+            </div>
         </form>
     </div>
 </div>
