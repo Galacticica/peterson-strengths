@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto p-6 bg-white rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Profile Information</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="flex justify-between mt-6">
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
