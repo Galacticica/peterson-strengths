@@ -46,6 +46,8 @@
   <div class="navbar-end">
     {% if user.is_authenticated %}
       <span class="font-bold text-lg">{{ user.first_name }} {{ user.last_name }}</span>
+      {% else %}
+      <a href="{% url 'login_page' %}" class="btn btn-primary">Login</a>
     {% endif %}
   </div>
 </div>
