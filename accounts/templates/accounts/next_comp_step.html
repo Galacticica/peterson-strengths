@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Next Competition</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-4 w-full">
+        <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+        {% if field.name == 'competition_date' %}
+          {% if field.value %}
+            {% with field.value|stringformat:'s' as date_str %}
+              <input type="date" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ date_str|slice:':10' }}" class="input input-bordered w-full" />
+            {% endwith %}
+          {% else %}
+            <input type="date" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="input input-bordered w-full" />
+          {% endif %}
+        {% elif field.field.widget.input_type == 'select' %}
+          {{ field }}
+        {% elif field.field.widget.input_type == 'textarea' %}
+          <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value }}</textarea>
+        {% elif field.field.widget.input_type == 'checkbox' %}
+          <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="checkbox"> {{ field.label }}
+        {% else %}
+          <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value }}" class="input input-bordered w-full" />
+        {% endif %}
+        {% if field.errors %}
+          <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'goal_step' %}" class="btn btn-secondary">Back</a>
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
