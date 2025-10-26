@@ -10,4 +10,7 @@ urlpatterns = [
     path("profile/", views.profile_step, name="profile_step"),
     path("experience/", views.experience_step, name="experience_step"),
     path("goals/", views.goal_step, name="goal_step"),
+    path("competition/", views.next_comp_step, name="next_comp_step"),
+    path("nutrition/", views.nutrition_step, name="nutrition_step"),
+    path("health/", views.health_step, name="health_step"),
 ]

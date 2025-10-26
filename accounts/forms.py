@@ -137,33 +137,33 @@ class ExperienceForm(forms.Form):
     )
     current_program = forms.CharField(
         max_length=255,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={"placeholder": "Current Training Split / Program", "class": "form-control"}),
         label="Current Program"
     )
     days_per_week = forms.IntegerField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Preferred Days per Week", "class": "form-control"}),
         label="Days per Week"
     )
     preffered_days = forms.CharField(
         max_length=255,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={"placeholder": "Preferred Training Days", "class": "form-control"}),
         label="Preferred Days"
     )
     squat_est = forms.FloatField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Estimated Squat 1RM", "class": "form-control"}),
         label="Estimated Squat 1RM"
     )
     bench_est = forms.FloatField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Estimated Bench Press 1RM", "class": "form-control"}),
         label="Estimated Bench Press 1RM"
     )
     deadlift_est = forms.FloatField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Estimated Deadlift 1RM", "class": "form-control"}),
         label="Estimated Deadlift 1RM"
     )
@@ -180,7 +180,7 @@ class CompetitionForm(forms.Form):
     )
     desired_weight_class = forms.CharField(
         max_length=50,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={"placeholder": "Desired Weight Class", "class": "form-control"}),
         label="Desired Weight Class"
     )
@@ -197,12 +197,12 @@ class NutritionForm(forms.Form):
         label="Do you have a nutrition plan?"
     )
     calories_per_day = forms.IntegerField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Calories per Day", "class": "form-control"}),
         label="Calories per Day"
     )
     protein_per_day = forms.FloatField(
-        required=True,
+        required=False,
         widget=forms.NumberInput(attrs={"placeholder": "Protein per Day (grams)", "class": "form-control"}),
         label="Protein per Day (grams)"
     )
@@ -210,7 +210,7 @@ class NutritionForm(forms.Form):
         max_length=50,
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Weight Management Goals", "class": "form-control"}),
-        label="Weight Management"
+        label="Current Weight Management Goal (e.g. cutting, bulking, maintenance)"
     )
     sleep_habits = forms.IntegerField(
         required=True,
@@ -226,7 +226,7 @@ class NutritionForm(forms.Form):
     supplements = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={"placeholder": "Supplements Used", "class": "form-control", "rows": 3}),
-        label="Supplements Used"
+        label="Supplements Used (if any)"
     )
 
     def clean(self):

@@ -148,7 +148,113 @@ def goal_step(request):
                 instance.save()
             for obj in goal_formset.deleted_objects:
                 obj.delete()
-            return redirect("contact")
+            return redirect("next_comp_step")
     else:
         goal_formset = GoalFormSet(queryset=models.Goal.objects.filter(user=request.user))
     return render(request, "accounts/goal_step.html", {"goal_formset": goal_formset})
+
+def next_comp_step(request):
+    '''
+    Handle user competition information step.
+    If the profile exists, pre-fill the form with existing competition data.
+    '''
+
+    profile_instance = models.Profile.objects.filter(user=request.user).first()
+    if request.method == "POST":
+        form = forms.CompetitionForm(request.POST)
+        if form.is_valid():
+            comp_data = form.cleaned_data
+            if profile_instance:
+                profile_instance.competition_date = comp_data['competition_date']
+                profile_instance.desired_weight_class = comp_data['desired_weight_class']
+                profile_instance.save()
+            else:
+                profile_instance = models.Profile.objects.create(
+                    user=request.user,
+                    competition_date=comp_data['competition_date'],
+                    desired_weight_class=comp_data['desired_weight_class']
+                )
+            return redirect("nutrition_step")  
+    else:
+        initial_data = {}
+        if profile_instance:
+            if profile_instance.competition_date:
+                initial_data['competition_date'] = profile_instance.competition_date
+            if profile_instance.desired_weight_class:
+                initial_data['desired_weight_class'] = profile_instance.desired_weight_class
+        form = forms.CompetitionForm(initial=initial_data if initial_data else None)
+    return render(request, "accounts/next_comp_step.html", {"form": form})
+
+
+def nutrition_step(request):
+    '''
+    Handle user nutrition information step.
+    If nutrition data exists, pre-fill the form with existing data.
+    '''
+
+    nutrition_instance = models.Nutrition.objects.filter(user=request.user).first()
+    if request.method == "POST":
+        form = forms.NutritionForm(request.POST)
+        if form.is_valid():
+            nutrition_data = form.cleaned_data
+            if nutrition_instance:
+                for field, value in nutrition_data.items():
+                    setattr(nutrition_instance, field, value)
+                nutrition_instance.save()
+            else:
+                nutrition_instance = models.Nutrition.objects.create(user=request.user, **nutrition_data)
+            return redirect("health_step")  
+    else:
+        form = forms.NutritionForm(initial={
+            field: getattr(nutrition_instance, field)
+            for field in forms.NutritionForm.base_fields
+        } if nutrition_instance else None)
+    return render(request, "accounts/nutrition_step.html", {"form": form})
+
+
+def health_step(request):
+    '''
+    Handle user health information step.
+    If health data exists, pre-fill the forms with existing data.
+    Uses a formset for injuries.
+    '''
+
+    InjuryFormSet = modelformset_factory(
+        models.Injury,
+        form=forms.InjuryForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
+    health_instance = models.Health.objects.filter(user=request.user).first()
+
+    if request.method == "POST":
+        health_form = forms.HealthForm(request.POST)
+        injury_formset = InjuryFormSet(request.POST, queryset=models.Injury.objects.filter(user=request.user))
+        if health_form.is_valid() and injury_formset.is_valid():
+            health_data = health_form.cleaned_data
+            if health_instance:
+                for field, value in health_data.items():
+                    setattr(health_instance, field, value)
+                health_instance.save()
+            else:
+                health_instance = models.Health.objects.create(user=request.user, **health_data)
+            instances = injury_formset.save(commit=False)
+            for instance in instances:
+                instance.user = request.user
+                instance.save()
+            for obj in injury_formset.deleted_objects:
+                obj.delete()
+            return redirect("contact")
+    else:
+        health_form = forms.HealthForm(initial={
+            field: getattr(health_instance, field)
+            for field in forms.HealthForm.base_fields
+        } if health_instance else None)
+        injury_formset = InjuryFormSet(queryset=models.Injury.objects.filter(user=request.user))
+
+    return render(request, "accounts/health_step.html", {
+        "health_form": health_form,
+        "injury_formset": injury_formset,
+    })
