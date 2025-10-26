@@ -417,3 +417,8 @@ def extras_step(request):
         "extras_form": extras_form,
         "video_link_formset": video_link_formset,
     })
+
+
+def profile_view(request):
+    """Render the user's profile page."""
+    return render(request, "accounts/profile.html", {"user": request.user})

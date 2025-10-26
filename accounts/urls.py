@@ -7,7 +7,7 @@ urlpatterns = [
     path("login/", views.MyLoginView.as_view(), name="login_page"),
     path("signup/", views.MySignupView.as_view(), name="signup_page"),
     path("logout/", views.MyLogoutView.as_view(), name="logout_page"),
-    path("profile/", views.profile_step, name="profile_step"),
+    path("profile_form/", views.profile_step, name="profile_step"),
     path("experience/", views.experience_step, name="experience_step"),
     path("goals/", views.goal_step, name="goal_step"),
     path("competition/", views.next_comp_step, name="next_comp_step"),
@@ -17,4 +17,5 @@ urlpatterns = [
     path("equipment/", views.equipment_step, name="equipment_step"),
     path("socials/", views.socials_step, name="socials_step"),
     path("extras/", views.extras_step, name="extras_step"),
+    path("profile/", views.profile_view, name="profile_page"),
 ]
