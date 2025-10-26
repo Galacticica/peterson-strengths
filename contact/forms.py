@@ -1,7 +1,16 @@
+"""
+File: forms.py
+Author: Reagan Zierke <reaganzierke@gmail.com>
+Date: 2025-10-25
+Description: Forms for the contact page.
+"""
+
 from django import forms
 
 
 class ContactForm(forms.Form):
+    """Contact form for users to send messages. """
+    
     name = forms.CharField(
         max_length=100,
         required=True,

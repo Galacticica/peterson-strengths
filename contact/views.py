@@ -1,12 +1,20 @@
+"""
+File: views.py
+Author: Reagan Zierke <reaganzierke@gmail.com>
+Date: 2025-10-25
+Description: View for the about and contact page. 
+"""
+
+
 from django.shortcuts import redirect, render
-from django.views.generic.edit import FormView
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.views import View
 from .forms import ContactForm
 
 
 def contact_view(request):
+    '''
+    Handle contact form submissions and render the contact page.
+    '''
+
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -25,6 +33,7 @@ def contact_view(request):
     
 def _format_email_body(cleaned_data):
     """Format the email body with submission details."""
+
     start_date = cleaned_data.get("start_date")
     end_date = cleaned_data.get("end_date")
     formatted_start = start_date.strftime("%B %d, %Y") if start_date else "N/A"
@@ -37,6 +46,8 @@ def _format_email_body(cleaned_data):
     )
 
 def _send_email(cleaned_data, request):
+    """Send an email with the contact form submission details."""
+
     email_body = _format_email_body(cleaned_data)
     # Implement email sending logic here
     print("Sending email with body:\n", email_body)

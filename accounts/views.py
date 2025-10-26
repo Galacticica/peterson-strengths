@@ -1,3 +1,11 @@
+"""
+File: views.py
+Author: Reagan Zierke <reaganzierke@gmail.com>
+Date: 2025-10-25
+Description: Views for the accounts app.
+"""
+
+
 from django.shortcuts import redirect, render
 from django.contrib.auth.views import LoginView
 from django.views.generic.edit import FormView
@@ -13,11 +21,13 @@ from . import models
 User = get_user_model()
 
 class MyLoginView(LoginView):
+    """Custom login view using MyLoginForm."""
     form_class = forms.LoginForm
     template_name = "accounts/login.html"
     redirect_authenticated_user = True
 
 class MySignupView(FormView):
+    """Custom signup view using SignupForm."""
     form_class = forms.SignupForm
     template_name = "accounts/signup.html"
     success_url = "/" 
@@ -37,11 +47,17 @@ class MySignupView(FormView):
         return super().form_invalid(form)
 
 class MyLogoutView(View):
+    """Custom logout view."""
     def get(self, request, *args, **kwargs):
         logout(request)  
         return redirect("/")  
 
 def profile_step(request):
+    '''
+    Handle user profile information step.
+    If the profile exists, pre-fill the form with existing data.
+    '''
+
     profile_instance = models.Profile.objects.filter(user=request.user).first()
     if request.method == "POST":
         form = forms.ProfileForm(request.POST)
@@ -62,6 +78,12 @@ def profile_step(request):
     return render(request, "accounts/profile_step.html", {"form": form})
 
 def experience_step(request):
+    '''
+    Handle user experience information step.
+    If experience data exists, pre-fill the forms with existing data.
+    Uses a formset for previous coaches.
+    '''
+
     PreviousCoachFormSet = modelformset_factory(models.PreviousCoach, form=forms.PreviousCoachForm, extra=1, can_delete=True)
     experience_instance = models.Experience.objects.filter(user=request.user).first()
 
@@ -94,5 +116,6 @@ def experience_step(request):
         "exp_form": exp_form,
         "coach_formset": coach_formset,
     })
+
 
 

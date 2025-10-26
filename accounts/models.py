@@ -1,9 +1,17 @@
-from django.db import models
+"""
+File: models.py
+Author: Reagan Zierke <reaganzierke@gmail.com>
+Date: 2025-10-25
+Description: Models for the accounts app.
+"""
 
+
+from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
+    """Custom user manager where email is the unique identifier."""
     use_in_migrations = True
 
     def create_user(self, email, password=None, **extra_fields):
@@ -29,7 +37,8 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = None  # Remove username field
+    """Custom user model with email as the unique identifier."""
+    username = None  
     email = models.EmailField(unique=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -40,6 +49,7 @@ class User(AbstractUser):
         return (self.first_name + " " + self.last_name).strip()
 
 class Profile(models.Model):
+    """User profile model to store additional information."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
@@ -66,6 +76,7 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 class Experience(models.Model):
+    """User experience model to store training background."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='experiences')
     level = models.CharField(max_length=100)
     time_lifted = models.CharField(max_length=100)
@@ -80,6 +91,7 @@ class Experience(models.Model):
         return f"{self.user}'s Experience"
     
 class PreviousCoach(models.Model):
+    """Model to store previous coaches."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='previous_coaches')
     coach_name = models.CharField(max_length=255)
 
@@ -87,6 +99,7 @@ class PreviousCoach(models.Model):
         return f"{self.user}'s Previous Coach: {self.coach_name}"
     
 class Nutrition(models.Model):
+    """Nutrition model to store user's nutrition information."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='nutrition')
     plan = models.BooleanField(default=False)
     calories_per_day = models.PositiveIntegerField(blank=True, null=True)
@@ -100,6 +113,7 @@ class Nutrition(models.Model):
         return f"{self.user}'s Nutrition Info"
 
 class Goal(models.Model):
+    """Goal model to store user's goals."""
     GOAL_TYPE_CHOICES = [
         ('short_term', 'Short Term'),
         ('long_term', 'Long Term'),
@@ -113,6 +127,7 @@ class Goal(models.Model):
         return f"{self.user}'s Goal: {self.type}"
 
 class Injury(models.Model):
+    """Injury model to store user's injury information."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='injuries')
     started = models.DateField()
     ended = models.DateField(blank=True, null=True)
@@ -128,6 +143,7 @@ class Injury(models.Model):
         super().save(*args, **kwargs)
 
 class CoachingPreference(models.Model):
+    """Coaching preference model to store user's coaching preferences."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='coaching_preference')
     style = models.CharField(max_length=100, blank=True, null=True)
     check_in_frequency = models.CharField(max_length=100, blank=True, null=True)
@@ -138,6 +154,7 @@ class CoachingPreference(models.Model):
         return f"{self.user}'s Coaching Preference"
 
 class Equipment(models.Model):
+    """Equipment model to store user's equipment."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='equipment')
     piece_name = models.CharField(max_length=255)
 
@@ -145,6 +162,7 @@ class Equipment(models.Model):
         return f"{self.user}'s Equipment: {self.piece_name}"
 
 class VideoLink(models.Model):
+    """Video link model to store user's video links."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='video_links')
     link = models.URLField()
 
@@ -152,6 +170,7 @@ class VideoLink(models.Model):
         return f"{self.user}'s Video Link"
 
 class SocialMedia(models.Model):
+    """Social media model to store user's social media links."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='social_media')
     instagram = models.URLField(blank=True, null=True)
     facebook = models.URLField(blank=True, null=True)
@@ -164,6 +183,7 @@ class SocialMedia(models.Model):
     
 
 class Health(models.Model):
+    """Health model to store user's health information."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='health')
     conditions = models.TextField(blank=True, null=True, help_text="List any health conditions")
     mobility_issues = models.TextField(blank=True, null=True, help_text="List any mobility issues")
