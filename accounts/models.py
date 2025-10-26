@@ -45,12 +45,12 @@ class Profile(models.Model):
     dob = models.DateField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     gender = models.CharField(max_length=10, blank=True, null=True)
-    height = models.FloatField(blank=True, null=True)  # in inches
-    weight = models.FloatField(blank=True, null=True)  # in pounds
+    height = models.FloatField(blank=True, null=True)  
+    weight = models.FloatField(blank=True, null=True)  
     location = models.CharField(max_length=255, blank=True, null=True)
     timezone = models.CharField(max_length=50, blank=True, null=True)
-    competition_date = models.DateField(blank=True, null=True)
-    desired_weight_class = models.CharField(max_length=50, blank=True, null=True)
+    competition_date = models.DateField(blank=True, null=True, help_text="Date of next competition")
+    desired_weight_class = models.CharField(max_length=50, blank=True, null=True, )
     training_environment = models.CharField(max_length=255, blank=True, null=True)
     lifting_gear = models.BooleanField(default=False)
     recent_training_log = models.TextField(blank=True, null=True)
@@ -91,7 +91,7 @@ class Nutrition(models.Model):
     plan = models.BooleanField(default=False)
     calories_per_day = models.PositiveIntegerField(blank=True, null=True)
     protein_per_day = models.FloatField(blank=True, null=True)  # in grams
-    weight_management = models.CharField(max_length=50, blank=True, null=True)
+    weight_management = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., cutting, bulking, maintenance")
     sleep_habits = models.PositiveIntegerField(blank=True, null=True)  # hours per night    
     stress = models.CharField(max_length=50, blank=True, null=True)
     supplements = models.TextField(blank=True, null=True)
@@ -100,9 +100,14 @@ class Nutrition(models.Model):
         return f"{self.user}'s Nutrition Info"
 
 class Goal(models.Model):
+    GOAL_TYPE_CHOICES = [
+        ('short_term', 'Short Term'),
+        ('long_term', 'Long Term'),
+        ('primary', 'Primary'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='goals')
-    type = models.CharField(max_length=100)
-    description = models.TextField()    
+    type = models.CharField(max_length=100, choices=GOAL_TYPE_CHOICES)
+    description = models.TextField()   
 
     def __str__(self):
         return f"{self.user}'s Goal: {self.type}"
@@ -156,3 +161,10 @@ class SocialMedia(models.Model):
 
     def __str__(self):
         return f"{self.user}'s Social Media Links"
+    
+
+class Health(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='health')
+    conditions = models.TextField(blank=True, null=True, help_text="List any health conditions")
+    mobility_issues = models.TextField(blank=True, null=True, help_text="List any mobility issues")
+    cleared_for_training = models.BooleanField(default=True)

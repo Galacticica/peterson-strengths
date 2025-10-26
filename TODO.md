@@ -1,0 +1,6 @@
+- [ ] Profile Page
+- [ ] Information Form
+- [ ] Shop Page
+- [ ] Payment
+- [ ] Client Testimonials
+- [ ] Email
