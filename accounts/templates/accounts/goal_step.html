@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto p-6 rounded shadow">
+	<h2 class="text-2xl font-bold mb-4">Your Goals</h2>
+	<form method="post">
+		{% csrf_token %}
+		<div id="goals-container">
+			{% for form in goal_formset %}
+			<div class="goal-field flex items-center mb-2">
+				{% for field in form %}
+					{% if field.name == 'type' %}
+						<div class="form-group flex flex-col items-start">
+							<label for="{{ field.id_for_label }}" class="font-semibold mb-1">Goal Type</label>
+							{{ field }}
+						</div>
+					{% elif field.field.widget.input_type != 'checkbox' %}
+						<div class="form-group">{{ field }}</div>
+					{% endif %}
+				{% endfor %}
+				{% if form.fields.DELETE %}
+					<input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" style="display:none;" class="delete-checkbox">
+				{% endif %}
+				<button type="button" class="delete-goal btn btn-danger ml-2" onclick="deleteGoal(this)" style="display:none;">Delete</button>
+			</div>
+			{% endfor %}
+		</div>
+		<button type="button" id="add-goal" class="btn btn-secondary mt-2">Add Goal</button>
+		{{ goal_formset.management_form }}
+		<div class="flex justify-between mt-6">
+			<a href="{% url 'experience_step' %}" class="btn btn-secondary">Back</a>
+			<button type="submit" class="btn btn-primary">Next</button>
+		</div>
+	</form>
+</div>
+<script>
+	function updateDeleteButtons() {
+		const fields = document.querySelectorAll('.goal-field');
+		fields.forEach((field, idx) => {
+			const delBtn = field.querySelector('.delete-goal');
+			delBtn.style.display = fields.length > 1 ? '' : 'none';
+		});
+	}
+	function deleteGoal(btn) {
+		const goalField = btn.parentElement;
+		const deleteCheckbox = goalField.querySelector('.delete-checkbox');
+		if (deleteCheckbox) {
+			deleteCheckbox.checked = true;
+			goalField.style.display = 'none';
+		}
+		updateDeleteButtons();
+		updateFormIndexes();
+	}
+	function updateFormIndexes() {
+		const fields = document.querySelectorAll('.goal-field');
+		const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+		if (totalForms) totalForms.value = fields.length;
+		fields.forEach((field, idx) => {
+			field.querySelectorAll('input, select, textarea').forEach(el => {
+				if (el.name) el.name = el.name.replace(/form-(\d+)-/, `form-${idx}-`);
+				if (el.id) el.id = el.id.replace(/form-(\d+)-/, `form-${idx}-`);
+			});
+		});
+	}
+	document.getElementById('add-goal').addEventListener('click', function() {
+		const container = document.getElementById('goals-container');
+		const fields = container.querySelectorAll('.goal-field');
+		const newField = fields[0].cloneNode(true);
+		newField.querySelectorAll('input, select, textarea').forEach(el => {
+			if (el.type === 'text' || el.tagName === 'TEXTAREA') el.value = '';
+			if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+		});
+		container.appendChild(newField);
+		updateDeleteButtons();
+		updateFormIndexes();
+	});
+	updateDeleteButtons();
+	updateFormIndexes();
+</script>
+{% endblock %}

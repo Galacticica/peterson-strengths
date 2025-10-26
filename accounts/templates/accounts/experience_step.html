@@ -1,46 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-xl mx-auto p-6 bg-white rounded shadow">
+<div class="max-w-xl mx-auto p-6 rounded shadow">
   <h2 class="text-2xl font-bold mb-4">Experience & Previous Coaches</h2>
   <form method="post">
     {% csrf_token %}
-    {{ exp_form.as_p }}
+    {# Only render fields except checkboxes from exp_form #}
+    {% for field in exp_form %}
+      {% if field.field.widget.input_type != 'checkbox' %}
+        <div class="form-group">{{ field }}</div>
+      {% endif %}
+    {% endfor %}
     <h3 class="text-xl font-semibold mt-6 mb-2">Previous Coaches</h3>
       <div id="coaches-container">
-        <div class="coach-field flex items-center mb-2">
-          <input type="text" name="coaches[]" class="form-input mr-2" placeholder="Enter coach name" />
-          <button type="button" class="delete-coach btn btn-danger" onclick="deleteCoach(this)" style="display:none;">Delete</button>
-        </div>
+        {% for form in coach_formset %}
+          <div class="coach-field flex items-center mb-2">
+            {% for field in form %}
+              {% if field.field.widget.input_type != 'checkbox' %}
+                <div class="form-group">{{ field }}</div>
+              {% endif %}
+            {% endfor %}
+            {# Render the hidden DELETE field for Django formset #}
+            {% if form.fields.DELETE %}
+              <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" style="display:none;" class="delete-checkbox">
+            {% endif %}
+            <button type="button" class="delete-coach btn btn-danger ml-2" onclick="deleteCoach(this)" style="display:none;">Delete</button>
+          </div>
+        {% endfor %}
       </div>
       <button type="button" id="add-coach" class="btn btn-secondary mt-2">Add Coach</button>
+      {{ coach_formset.management_form }}
       <div class="flex justify-between mt-6">
         <a href="{% url 'profile_step' %}" class="btn btn-secondary">Back</a>
         <button type="submit" class="btn btn-primary">Next</button>
       </div>
       <script>
-        <!-- JavaScript to handle dynamic addition/removal of previous coach fields -->
-        const container = document.getElementById('coaches-container');
-        const addBtn = document.getElementById('add-coach');
         function updateDeleteButtons() {
-          const fields = container.querySelectorAll('.coach-field');
+          const fields = document.querySelectorAll('.coach-field');
           fields.forEach((field, idx) => {
             const delBtn = field.querySelector('.delete-coach');
             delBtn.style.display = fields.length > 1 ? '' : 'none';
           });
         }
         function deleteCoach(btn) {
-          btn.parentElement.remove();
+          const coachField = btn.parentElement;
+          const deleteCheckbox = coachField.querySelector('.delete-checkbox');
+          if (deleteCheckbox) {
+            deleteCheckbox.checked = true;
+            coachField.style.display = 'none';
+          }
           updateDeleteButtons();
+          updateFormIndexes();
         }
-        addBtn.addEventListener('click', function() {
-          const field = document.createElement('div');
-          field.className = 'coach-field flex items-center mb-2';
-          field.innerHTML = `<input type="text" name="coaches[]" class="form-input mr-2" placeholder="Enter coach name" />
-            <button type="button" class="delete-coach btn btn-danger" onclick="deleteCoach(this)">Delete</button>`;
-          container.appendChild(field);
+        function updateFormIndexes() {
+          const fields = document.querySelectorAll('.coach-field');
+          const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+          if (totalForms) totalForms.value = fields.length;
+          fields.forEach((field, idx) => {
+            field.querySelectorAll('input, select, textarea').forEach(el => {
+              if (el.name) el.name = el.name.replace(/form-(\d+)-/, `form-${idx}-`);
+              if (el.id) el.id = el.id.replace(/form-(\d+)-/, `form-${idx}-`);
+            });
+          });
+        }
+        document.getElementById('add-coach').addEventListener('click', function() {
+          const container = document.getElementById('coaches-container');
+          const fields = container.querySelectorAll('.coach-field');
+          const newField = fields[0].cloneNode(true);
+          newField.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.type === 'text' || el.tagName === 'TEXTAREA') el.value = '';
+            if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+          });
+          container.appendChild(newField);
           updateDeleteButtons();
+          updateFormIndexes();
         });
         updateDeleteButtons();
+        updateFormIndexes();
       </script>
   </form>
 </div>

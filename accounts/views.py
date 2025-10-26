@@ -84,7 +84,14 @@ def experience_step(request):
     Uses a formset for previous coaches.
     '''
 
-    PreviousCoachFormSet = modelformset_factory(models.PreviousCoach, form=forms.PreviousCoachForm, extra=1, can_delete=True)
+    PreviousCoachFormSet = modelformset_factory(
+        models.PreviousCoach,
+        form=forms.PreviousCoachForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
     experience_instance = models.Experience.objects.filter(user=request.user).first()
 
     if request.method == "POST":
@@ -104,7 +111,7 @@ def experience_step(request):
                 instance.save()
             for obj in coach_formset.deleted_objects:
                 obj.delete()
-            return redirect("contact")
+            return redirect("goal_step")
     else:
         exp_form = forms.ExperienceForm(initial={
             field: getattr(experience_instance, field)
@@ -118,4 +125,30 @@ def experience_step(request):
     })
 
 
+def goal_step(request):
+    '''
+    Handle user goal information step.
+    If goal data exists, pre-fill the form with existing data.
+    '''
 
+    GoalFormSet = modelformset_factory(
+        models.Goal,
+        form=forms.GoalForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
+    if request.method == "POST":
+        goal_formset = GoalFormSet(request.POST, queryset=models.Goal.objects.filter(user=request.user))
+        if goal_formset.is_valid():
+            instances = goal_formset.save(commit=False)
+            for instance in instances:
+                instance.user = request.user
+                instance.save()
+            for obj in goal_formset.deleted_objects:
+                obj.delete()
+            return redirect("contact")
+    else:
+        goal_formset = GoalFormSet(queryset=models.Goal.objects.filter(user=request.user))
+    return render(request, "accounts/goal_step.html", {"goal_formset": goal_formset})
