@@ -246,7 +246,7 @@ def health_step(request):
                 instance.save()
             for obj in injury_formset.deleted_objects:
                 obj.delete()
-            return redirect("contact")
+            return redirect("preference_step")
     else:
         health_form = forms.HealthForm(initial={
             field: getattr(health_instance, field)
@@ -258,3 +258,29 @@ def health_step(request):
         "health_form": health_form,
         "injury_formset": injury_formset,
     })
+
+
+def preference_step(request):
+    '''
+    Handle user coaching preference information step.
+    If coaching preference data exists, pre-fill the form with existing data.
+    '''
+
+    preference_instance = models.CoachingPreference.objects.filter(user=request.user).first()
+    if request.method == "POST":
+        form = forms.CoachingPreferenceForm(request.POST)
+        if form.is_valid():
+            preference_data = form.cleaned_data
+            if preference_instance:
+                for field, value in preference_data.items():
+                    setattr(preference_instance, field, value)
+                preference_instance.save()
+            else:
+                preference_instance = models.CoachingPreference.objects.create(user=request.user, **preference_data)
+            return redirect("contact")  
+    else:
+        form = forms.CoachingPreferenceForm(initial={
+            field: getattr(preference_instance, field)
+            for field in forms.CoachingPreferenceForm.base_fields
+        } if preference_instance else None)
+    return render(request, "accounts/preference_step.html", {"form": form})

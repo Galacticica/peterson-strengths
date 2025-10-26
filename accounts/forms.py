@@ -313,6 +313,19 @@ class SocialMediaForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+    
+class GearForm(forms.Form):
+    training_environment = forms.CharField(
+        max_length=255,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Training Environment", "class": "form-control"}),
+        label="Training Environment (e.g., home gym, commercial gym)"
+    )
+    lifting_gear = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        label="Do you use lifting gear? (e.g., belts, wraps)"
+    )
 
 
 class PreviousCoachForm(forms.ModelForm):
@@ -348,4 +361,12 @@ class VideoLinkForm(forms.ModelForm):
         fields = ['link']
         widgets = {
             'link': forms.URLInput(attrs={"placeholder": "Video Link URL", "class": "form-control"}),
+        }
+
+class EquipmentForm(forms.ModelForm):
+    class Meta:
+        model = Equipment
+        fields = ['piece_name']
+        widgets = {
+            'piece_name': forms.TextInput(attrs={"placeholder": "Equipment Name", "class": "form-control"}),
         }
