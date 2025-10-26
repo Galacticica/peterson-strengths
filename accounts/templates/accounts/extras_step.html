@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Additional Information</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in extras_form %}
+      <div class="mb-4 w-full">
+        <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+        {% if field.field.widget.input_type == 'select' %}
+          {{ field }}
+        {% elif field.field.widget.input_type == 'textarea' %}
+          <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value }}</textarea>
+        {% elif field.field.widget.input_type == 'checkbox' %}
+          <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="checkbox" {% if field.value %}checked{% endif %}> {{ field.label }}
+        {% else %}
+          <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{% if field.value and field.value != 'None' %}{{ field.value }}{% endif %}" class="input input-bordered w-full" />
+        {% endif %}
+        {% if field.errors %}
+          <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    
+    <h3 class="text-xl font-semibold mt-6 mb-4">Video Links</h3>
+    
+    {{ video_link_formset.management_form }}
+    <div id="video-formset">
+      {% for form in video_link_formset %}
+        <div class="video-form mb-4 p-4 border rounded">
+          {% for field in form %}
+            {% if field.name != 'id' and field.name != 'user' and field.name != 'DELETE' %}
+              <div class="mb-4 w-full">
+                <label for="{{ field.id_for_label }}" class="block font-semibold mb-1">{{ field.label }}</label>
+                {% if field.field.widget.input_type == 'select' %}
+                  {{ field }}
+                {% elif field.field.widget.input_type == 'textarea' %}
+                  <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="textarea textarea-bordered w-full">{{ field.value|default:'' }}</textarea>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="input input-bordered w-full" />
+                {% endif %}
+                {% if field.errors %}
+                  <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% elif field.name == 'id' %}
+              {{ field }}
+            {% elif field.name == 'DELETE' %}
+              <input type="hidden" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
+            {% endif %}
+          {% endfor %}
+          <div class="text-right delete-button-container">
+            <button type="button" class="btn btn-error btn-sm delete-video">Remove</button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <button type="button" id="add-video" class="btn btn-secondary mb-4">Add Video Link</button>
+    
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'socials_step' %}" class="btn btn-secondary">Back</a>
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-video');
+    const formsetContainer = document.getElementById('video-formset');
+    const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    
+    const existingForms = document.querySelectorAll('.video-form');
+    existingForms.forEach(form => {
+        const idField = form.querySelector('input[name$="-id"]');
+        const hasId = idField && idField.value;
+        
+        const hasData = Array.from(form.querySelectorAll('input[type="text"], input[type="url"], textarea, select')).some(input => {
+            return input.value && input.value.trim() !== '';
+        });
+        
+        if (!hasId && !hasData) {
+            form.style.display = 'none';
+        }
+    });
+    
+    function updateDeleteButtons() {
+        const visibleForms = document.querySelectorAll('.video-form:not([style*="display: none"])');
+        visibleForms.forEach(form => {
+            const deleteContainer = form.querySelector('.delete-button-container');
+            if (visibleForms.length >= 1) {
+                deleteContainer.style.display = 'block';
+            } else {
+                deleteContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    addButton.addEventListener('click', function() {
+        const hiddenEmptyForm = Array.from(document.querySelectorAll('.video-form')).find(form => {
+            return form.style.display === 'none' && !form.querySelector('input[name$="-id"]').value;
+        });
+        
+        if (hiddenEmptyForm) {
+            hiddenEmptyForm.style.display = 'block';
+            updateDeleteButtons();
+            return;
+        }
+        
+        const formCount = document.querySelectorAll('.video-form').length;
+        const firstForm = document.querySelector('.video-form');
+        
+        if (!firstForm) return;
+        
+        const newForm = firstForm.cloneNode(true);
+        
+        const formRegex = new RegExp('form-(\\d+)-', 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        
+        newForm.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(input => {
+            input.value = '';
+        });
+        
+        newForm.querySelectorAll('select').forEach(select => {
+            select.selectedIndex = 0;
+        });
+        
+        const idField = newForm.querySelector('input[name$="-id"]');
+        if (idField) {
+            idField.value = '';
+        }
+        
+        const deleteField = newForm.querySelector('input[name$="-DELETE"]');
+        if (deleteField) {
+            deleteField.value = '';
+        }
+        
+        newForm.style.display = 'block';
+        
+        const deleteBtn = newForm.querySelector('.delete-video');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                deleteVideoForm(newForm);
+            });
+        }
+        
+        formsetContainer.appendChild(newForm);
+        totalFormsInput.value = formCount + 1;
+        updateDeleteButtons();
+    });
+    
+    document.querySelectorAll('.delete-video').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = btn.closest('.video-form');
+            deleteVideoForm(form);
+        });
+    });
+    
+    function deleteVideoForm(formElement) {
+        const deleteInput = formElement.querySelector('input[name$="-DELETE"]');
+        const idInput = formElement.querySelector('input[name$="-id"]');
+        
+        const visibleForms = document.querySelectorAll('.video-form:not([style*="display: none"])').length;
+        
+        if (idInput && idInput.value) {
+            deleteInput.value = 'on';
+            formElement.style.display = 'none';
+        } else {
+            if (visibleForms === 1) {
+                formElement.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(input => {
+                    input.value = '';
+                });
+                formElement.querySelectorAll('select').forEach(select => {
+                    select.selectedIndex = 0;
+                });
+                formElement.style.display = 'none';
+            } else {
+                formElement.remove();
+                const allForms = document.querySelectorAll('.video-form').length;
+                totalFormsInput.value = allForms;
+            }
+        }
+        updateDeleteButtons();
+    }
+    
+    updateDeleteButtons();
+});
+</script>
+{% endblock %}

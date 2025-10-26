@@ -63,7 +63,7 @@ class Profile(models.Model):
     desired_weight_class = models.CharField(max_length=50, blank=True, null=True, )
     training_environment = models.CharField(max_length=255, blank=True, null=True)
     lifting_gear = models.BooleanField(default=False)
-    recent_training_log = models.TextField(blank=True, null=True)
+    recent_training_log = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.user}'s Profile"

@@ -347,3 +347,11 @@ class EquipmentForm(forms.ModelForm):
         widgets = {
             'piece_name': forms.TextInput(attrs={"placeholder": "Equipment Name", "class": "form-control"}),
         }
+
+
+class ExtrasForm(forms.Form):
+    recent_training_log = forms.URLField(
+        required=False,
+        widget=forms.URLInput(attrs={"placeholder": "Link to Recent Training Log", "class": "form-control"}),
+        label="Recent Training Log"
+    )

@@ -363,7 +363,57 @@ def socials_step(request):
                 instance.save()
             for obj in social_formset.deleted_objects:
                 obj.delete()
-            return redirect("/")  
+            return redirect("extras_step")  
     else:
         social_formset = SocialMediaFormSet(queryset=models.SocialMedia.objects.filter(user=request.user))
     return render(request, "accounts/socials_step.html", {"social_formset": social_formset})
+
+def extras_step(request):
+    '''
+    Handle user extras information step.
+    If extras data exists, pre-fill the forms with existing data.
+    Uses formset for video links.
+    '''
+
+    VideoLinkFormSet = modelformset_factory(
+        models.VideoLink,
+        form=forms.VideoLinkForm,
+        extra=1,
+        can_delete=True,
+        min_num=0,
+        validate_min=False
+    )
+    profile_instance = models.Profile.objects.filter(user=request.user).first()
+
+    if request.method == "POST":
+        extras_form = forms.ExtrasForm(request.POST)
+        video_link_formset = VideoLinkFormSet(request.POST, queryset=models.VideoLink.objects.filter(user=request.user))
+        if extras_form.is_valid() and video_link_formset.is_valid():
+            extras_data = extras_form.cleaned_data
+            if profile_instance:
+                profile_instance.recent_training_log = extras_data['recent_training_log']
+                profile_instance.save()
+            else:
+                profile_instance = models.Profile.objects.create(
+                    user=request.user,
+                    recent_training_log=extras_data['recent_training_log']
+                )
+            instances = video_link_formset.save(commit=False)
+            for instance in instances:
+                instance.user = request.user
+                instance.save()
+            for obj in video_link_formset.deleted_objects:
+                obj.delete()
+            return redirect("/")
+    else:
+        initial_data = {}
+        if profile_instance:
+            if profile_instance.recent_training_log:
+                initial_data['recent_training_log'] = profile_instance.recent_training_log
+        extras_form = forms.ExtrasForm(initial=initial_data if initial_data else None)
+        video_link_formset = VideoLinkFormSet(queryset=models.VideoLink.objects.filter(user=request.user))
+
+    return render(request, "accounts/extras_step.html", {
+        "extras_form": extras_form,
+        "video_link_formset": video_link_formset,
+    })

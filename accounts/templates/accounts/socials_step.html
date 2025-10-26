@@ -52,24 +52,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const formsetContainer = document.getElementById('social-formset');
     const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
     
-    // Hide all empty forms on page load (forms without ID and without data)
     const existingForms = document.querySelectorAll('.social-form');
     existingForms.forEach(form => {
         const idField = form.querySelector('input[name$="-id"]');
         const hasId = idField && idField.value;
         
-        // Check if form has any data
         const hasData = Array.from(form.querySelectorAll('input[type="text"], input[type="url"], textarea, select')).some(input => {
             return input.value && input.value.trim() !== '';
         });
         
-        // Hide forms that have no ID and no data
         if (!hasId && !hasData) {
             form.style.display = 'none';
         }
     });
     
-    // Update visibility of delete buttons
     function updateDeleteButtons() {
         const visibleForms = document.querySelectorAll('.social-form:not([style*="display: none"])');
         visibleForms.forEach(form => {
@@ -83,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     addButton.addEventListener('click', function() {
-        // Check if there's a hidden empty form we can reuse
         const hiddenEmptyForm = Array.from(document.querySelectorAll('.social-form')).find(form => {
             return form.style.display === 'none' && !form.querySelector('input[name$="-id"]').value;
         });
@@ -149,12 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const visibleForms = document.querySelectorAll('.social-form:not([style*="display: none"])').length;
         
-        // If the form has an id (existing record), mark for deletion
         if (idInput && idInput.value) {
             deleteInput.value = 'on';
             formElement.style.display = 'none';
         } else {
-            // If it's the last visible form, just hide it instead of removing
             if (visibleForms === 1) {
                 formElement.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(input => {
                     input.value = '';
@@ -164,9 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 formElement.style.display = 'none';
             } else {
-                // If there are multiple forms, remove it from the DOM
                 formElement.remove();
-                // Update TOTAL_FORMS count
                 const allForms = document.querySelectorAll('.social-form').length;
                 totalFormsInput.value = allForms;
             }
@@ -174,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDeleteButtons();
     }
     
-    // Initial update of delete buttons
     updateDeleteButtons();
 });
 </script>

@@ -76,35 +76,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const formsetContainer = document.getElementById('equipment-formset');
     const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
     
-    // Get the empty form template
     let emptyFormIndex = parseInt(totalFormsInput.value);
     
     addButton.addEventListener('click', function() {
         const formCount = document.querySelectorAll('.equipment-form').length;
         const newForm = document.querySelector('.equipment-form').cloneNode(true);
         
-        // Update form index in the cloned form
         const formRegex = new RegExp('form-(\\d+)-', 'g');
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
         
-        // Clear input values
         newForm.querySelectorAll('input[type="text"], textarea').forEach(input => {
             input.value = '';
         });
         
-        // Clear hidden id field
         const idField = newForm.querySelector('input[name$="-id"]');
         if (idField) {
             idField.value = '';
         }
         
-        // Clear DELETE field
         const deleteField = newForm.querySelector('input[name$="-DELETE"]');
         if (deleteField) {
             deleteField.value = '';
         }
         
-        // Add delete button functionality
         const deleteBtn = newForm.querySelector('.delete-equipment');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function() {
@@ -116,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
         totalFormsInput.value = formCount + 1;
     });
     
-    // Add delete functionality to existing forms
     document.querySelectorAll('.delete-equipment').forEach(btn => {
         btn.addEventListener('click', function() {
             const form = btn.closest('.equipment-form');
@@ -128,26 +121,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const deleteInput = formElement.querySelector('input[name$="-DELETE"]');
         const idInput = formElement.querySelector('input[name$="-id"]');
         
-        // Count visible forms
         const visibleForms = document.querySelectorAll('.equipment-form:not([style*="display: none"])').length;
         
-        // If this is the last visible form and it's empty (no ID), don't delete it
         if (visibleForms === 1 && (!idInput || !idInput.value)) {
-            // Just clear the form instead
             formElement.querySelectorAll('input[type="text"], textarea').forEach(input => {
                 input.value = '';
             });
             return;
         }
         
-        // If the form has an id (existing record), mark for deletion
         if (idInput && idInput.value) {
             deleteInput.value = 'on';
             formElement.style.display = 'none';
         } else {
-            // If it's a new form, just remove it from the DOM
             formElement.remove();
-            // Update TOTAL_FORMS count
             const remainingForms = document.querySelectorAll('.equipment-form:not([style*="display: none"])').length;
             totalFormsInput.value = remainingForms;
         }

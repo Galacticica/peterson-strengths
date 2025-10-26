@@ -16,4 +16,5 @@ urlpatterns = [
     path("preference/", views.preference_step, name="preference_step"),
     path("equipment/", views.equipment_step, name="equipment_step"),
     path("socials/", views.socials_step, name="socials_step"),
+    path("extras/", views.extras_step, name="extras_step"),
 ]
