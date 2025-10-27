@@ -1,7 +1,38 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<h2 class="text-3xl font-bold mb-2 flex justify-center">Welcome {{ user.first_name }} {{ user.last_name }}</h2>
+<div class="max-w-7xl mx-auto px-6 py-8">
+    <h2 class="text-4xl font-bold mb-8 text-center">Welcome {{ user.first_name }} {{ user.last_name }}</h2>
+    
+    <h2 class="text-2xl font-semibold">Profile Information</h2>
+    <div class="p-2 rounded shadow max-w-md mx-auto"></div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Email:</span>
+            <span>{{ user.email }}</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Phone Number:</span>
+            <span>{{ user.profile.phone_number }}</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Date of Birth:</span>
+            <span>{{ user.profile.dob }}</span>
+            <span class="ml-2 text-sm text-gray-200">({{ user.profile.age }} years old)</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Height:</span>
+            <span>{{ user.profile.height }} in</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Weight:</span>
+            <span>{{ user.profile.weight }} lbs</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Location:</span>
+            <span>{{ user.profile.location }}</span>
+            <span class="ml-2 text-sm text-gray-200">({{ user.profile.timezone }})</span>
+        </div>
+    </div>
 
-
+</div>
 {% endblock %}

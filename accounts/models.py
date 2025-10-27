@@ -78,14 +78,14 @@ class Profile(models.Model):
 class Experience(models.Model):
     """User experience model to store training background."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='experiences')
-    level = models.CharField(max_length=100)
-    time_lifted = models.CharField(max_length=100)
-    current_program = models.CharField(max_length=255)
-    days_per_week = models.PositiveIntegerField()
-    preffered_days = models.CharField(max_length=255)
-    squat_est = models.FloatField()  # estimated 1RM
-    bench_est = models.FloatField()  # estimated 1RM
-    deadlift_est = models.FloatField()  # estimated 1RM
+    level = models.CharField(max_length=100, blank=True, null=True)
+    time_lifted = models.CharField(max_length=100, blank=True, null=True)
+    current_program = models.CharField(max_length=255, blank=True, null=True)
+    days_per_week = models.PositiveIntegerField(blank=True, null=True)
+    preffered_days = models.CharField(max_length=255, blank=True, null=True)
+    squat_est = models.FloatField(blank=True, null=True)  # estimated 1RM
+    bench_est = models.FloatField(blank=True, null=True)  # estimated 1RM
+    deadlift_est = models.FloatField(blank=True, null=True)  # estimated 1RM
 
     def __str__(self):
         return f"{self.user}'s Experience"
@@ -93,7 +93,7 @@ class Experience(models.Model):
 class PreviousCoach(models.Model):
     """Model to store previous coaches."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='previous_coaches')
-    coach_name = models.CharField(max_length=255)
+    coach_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user}'s Previous Coach: {self.coach_name}"
@@ -101,7 +101,7 @@ class PreviousCoach(models.Model):
 class Nutrition(models.Model):
     """Nutrition model to store user's nutrition information."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='nutrition')
-    plan = models.BooleanField(default=False)
+    plan = models.BooleanField(default=False, blank=True, null=True)
     calories_per_day = models.PositiveIntegerField(blank=True, null=True)
     protein_per_day = models.FloatField(blank=True, null=True)  # in grams
     weight_management = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., cutting, bulking, maintenance")
