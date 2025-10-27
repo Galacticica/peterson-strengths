@@ -1,6 +1,6 @@
 - [ ] Profile Page
-- [ ] Information Form
-- [ ] Navigation for Information Form
+- [X] Information Form
+- [X] Navigation for Information Form
 - [ ] Shop Page
 - [ ] Payment
 - [ ] Client Testimonials
