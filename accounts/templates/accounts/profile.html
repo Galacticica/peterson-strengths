@@ -4,88 +4,112 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
     <h2 class="text-4xl font-bold mb-8 text-center">Welcome {{ user.first_name }} {{ user.last_name }}</h2>
     
-    <h2 class="text-2xl font-semibold mb-4">Profile Information</h2>
-    <div class="p-4 rounded shadow max-w-md">
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Email:</span>
-            <span>{% if user.email %}{{ user.email }}{% else %}Not specified{% endif %}</span>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-6">
+    
+    <h2 class="text-2xl font-semibold mb-4">Personal Information</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <span class="text-sm text-gray-400">Email</span>
+                <p class="font-medium text-primary">{% if user.email %}{{ user.email }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-400">Phone Number</span>
+                <p class="font-medium">{% if user.profile.phone_number and user.profile.phone_number != "None" %}{{ user.profile.phone_number }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
         </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Phone Number:</span>
-            <span>{% if user.profile.phone_number and user.profile.phone_number != "None" %}{{ user.profile.phone_number }}{% else %}Not specified{% endif %}</span>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <span class="text-sm text-gray-400">Date of Birth</span>
+                <p class="font-medium">
+                    {% if user.profile.dob and user.profile.dob != "None" %}
+                        {{ user.profile.dob }}
+                        {% if user.profile.age %}
+                            <span class="badge badge-sm badge-ghost ml-2">{{ user.profile.age }} yrs</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-gray-500">Not specified</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-400">Gender</span>
+                <p class="font-medium">{% if user.profile.gender and user.profile.gender != "None" %}{{ user.profile.gender|title }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
         </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Date of Birth:</span>
-            <span>{% if user.profile.dob and user.profile.dob != "None" %}{{ user.profile.dob }}{% else %}Not specified{% endif %}</span>
-            {% if user.profile.age %}
-                <span class="ml-2 text-sm text-gray-200">({{ user.profile.age }} years old)</span>
-            {% endif %}
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <span class="text-sm text-gray-400">Height</span>
+                <p class="font-medium">{% if user.profile.height is not None %}<span class="badge badge-outline">{{ user.profile.height }} in</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-400">Weight</span>
+                <p class="font-medium">{% if user.profile.weight is not None %}<span class="badge badge-outline">{{ user.profile.weight }} lbs</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
         </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Gender:</span>
-            <span>{% if user.profile.gender and user.profile.gender != "None" %}{{ user.profile.gender|title }}{% else %}Not specified{% endif %}</span>
-        </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Height:</span>
-            <span>{% if user.profile.height is not None %}{{ user.profile.height }} in{% else %}Not specified{% endif %}</span>
-        </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Weight:</span>
-            <span>{% if user.profile.weight is not None %}{{ user.profile.weight }} lbs{% else %}Not specified{% endif %}</span>
-        </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Location:</span>
-            <span>{% if user.profile.location and user.profile.location != "None" %}{{ user.profile.location }}{% else %}Not specified{% endif %}</span>
-            {% if user.profile.timezone and user.profile.timezone != "None" %}
-                <span class="ml-2 text-sm text-gray-200">({{ user.profile.timezone }})</span>
-            {% endif %}
-        </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Competition Date:</span>
-            <span>{% if user.profile.competition_date and user.profile.competition_date != "None" %}{{ user.profile.competition_date }}{% else %}Not specified{% endif %}</span>
-        </div>
-        <div class="flex items-center mb-3">
-            <span class="font-medium w-40">Desired Weight Class:</span>
-            <span>{% if user.profile.desired_weight_class and user.profile.desired_weight_class != "None" %}{{ user.profile.desired_weight_class }}{% else %}Not specified{% endif %}</span>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <span class="text-sm text-gray-400">Location</span>
+                <p class="font-medium">
+                    {% if user.profile.location and user.profile.location != "None" %}
+                        {{ user.profile.location }}
+                        {% if user.profile.timezone and user.profile.timezone != "None" %}
+                            <span class="badge badge-sm badge-ghost ml-2">{{ user.profile.timezone }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-gray-500">Not specified</span>
+                    {% endif %}
+                </p>
+            </div>
         </div>
     </div>
     
     <h2 class="text-2xl font-semibold mt-8 mb-4">Previous Experience</h2>
-    <div class="p-4 rounded shadow max-w-md">
+    <div class="p-6 rounded shadow bg-base-200">
         {% if user.experiences.exists %}
             {% for experience in user.experiences.all %}
-                <div class="mb-6 pb-4 border-b border-gray-600 last:border-0">
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Experience Level:</span>
-                        <span>{% if experience.level and experience.level != "None" %}{{ experience.level }}{% else %}Not specified{% endif %}</span>
+                <div class="mb-6 pb-6 {% if not forloop.last %}border-b border-gray-600{% endif %}">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <span class="text-sm text-gray-400">Experience Level</span>
+                            <p class="font-medium">{% if experience.level and experience.level != "None" %}{{ experience.level }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-400">Time Lifted</span>
+                            <p class="font-medium">{% if experience.time_lifted and experience.time_lifted != "None" %}{{ experience.time_lifted }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                        </div>
                     </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Time Lifted:</span>
-                        <span>{% if experience.time_lifted and experience.time_lifted != "None" %}{{ experience.time_lifted }}{% else %}Not specified{% endif %}</span>
+                    <div class="mb-4">
+                        <span class="text-sm text-gray-400">Current Program</span>
+                        <p class="font-medium">{% if experience.current_program and experience.current_program != "None" %}{{ experience.current_program }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
                     </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Current Program:</span>
-                        <span>{% if experience.current_program and experience.current_program != "None" %}{{ experience.current_program }}{% else %}Not specified{% endif %}</span>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <span class="text-sm text-gray-400">Days per Week</span>
+                            <p class="font-medium">{% if experience.days_per_week is not None %}<span class="badge badge-primary">{{ experience.days_per_week }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-400">Preferred Days</span>
+                            <p class="font-medium">{% if experience.preffered_days and experience.preffered_days != "None" %}{{ experience.preffered_days }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                        </div>
                     </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Days per Week:</span>
-                        <span>{% if experience.days_per_week is not None %}{{ experience.days_per_week }}{% else %}Not specified{% endif %}</span>
-                    </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Preferred Days:</span>
-                        <span>{% if experience.preffered_days and experience.preffered_days != "None" %}{{ experience.preffered_days }}{% else %}Not specified{% endif %}</span>
-                    </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Squat Est. 1RM:</span>
-                        <span>{% if experience.squat_est is not None %}{{ experience.squat_est }} lbs{% else %}Not specified{% endif %}</span>
-                    </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Bench Est. 1RM:</span>
-                        <span>{% if experience.bench_est is not None %}{{ experience.bench_est }} lbs{% else %}Not specified{% endif %}</span>
-                    </div>
-                    <div class="flex items-center mb-3">
-                        <span class="font-medium w-40">Deadlift Est. 1RM:</span>
-                        <span>{% if experience.deadlift_est is not None %}{{ experience.deadlift_est }} lbs{% else %}Not specified{% endif %}</span>
+                    
+                    <div class="divider text-sm">Estimated 1RM</div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <span class="text-sm text-gray-400">Squat</span>
+                            <p class="font-bold text-lg">{% if experience.squat_est is not None %}<span class="text-primary">{{ experience.squat_est }}</span> <span class="text-xs">lbs</span>{% else %}<span class="text-gray-500 text-sm">-</span>{% endif %}</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-sm text-gray-400">Bench</span>
+                            <p class="font-bold text-lg">{% if experience.bench_est is not None %}<span class="text-primary">{{ experience.bench_est }}</span> <span class="text-xs">lbs</span>{% else %}<span class="text-gray-500 text-sm">-</span>{% endif %}</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-sm text-gray-400">Deadlift</span>
+                            <p class="font-bold text-lg">{% if experience.deadlift_est is not None %}<span class="text-primary">{{ experience.deadlift_est }}</span> <span class="text-xs">lbs</span>{% else %}<span class="text-gray-500 text-sm">-</span>{% endif %}</p>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -94,30 +118,279 @@
         {% endif %}
         
         {% if user.previous_coaches.exists %}
-            <div class="mt-6">
-                <h3 class="font-semibold text-lg mb-3">Previous Coaches:</h3>
-                <ul class="list-disc list-inside space-y-2">
+            <div class="divider"></div>
+            <div class="mt-4">
+                <h3 class="font-semibold text-lg mb-3">Previous Coaches</h3>
+                <div class="flex flex-wrap gap-2">
                     {% for coach in user.previous_coaches.all %}
-                        <li>{% if coach.coach_name and coach.coach_name != "None" %}{{ coach.coach_name }}{% else %}Not specified{% endif %}</li>
+                        <span class="badge badge-outline badge-lg">{% if coach.coach_name and coach.coach_name != "None" %}{{ coach.coach_name }}{% else %}Not specified{% endif %}</span>
                     {% endfor %}
-                </ul>
-            </div>
-        {% else %}
-            <div class="mt-6">
-                <h3 class="font-semibold text-lg mb-3">Previous Coaches:</h3>
-                <p class="text-gray-400">No previous coaches listed.</p>
+                </div>
             </div>
         {% endif %}
     </div>
     
-    <h2 class="text-2xl font-semibold mt-8">Equipment Access</h2>
-    <h2 class="text-2xl font-semibold">Goals</h2>
-    <h2 class="text-2xl font-semibold">Coaching Preferences</h2>
-    <h2 class="text-2xl font-semibold">Nutrition Information</h2>
-    <h2 class="text-2xl font-semibold">Health Information</h2>i 
-    <h2 class="text-2xl font-semibold">Social Media</h2>
-    <h2 class="text-2xl font-semibold">Miscellaneous</h2>
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Equipment Access</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <span class="text-sm text-gray-400">Training Environment</span>
+                <p class="font-medium">{% if user.profile.training_environment and user.profile.training_environment != "None" %}<span class="badge badge-primary">{{ user.profile.training_environment }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-400">Lifting Gear</span>
+                <p class="font-medium"><span class="badge {% if user.profile.lifting_gear %}badge-success{% else %}badge-ghost{% endif %}">{% if user.profile.lifting_gear %}Yes{% else %}No{% endif %}</span></p>
+            </div>
+        </div>
+        
+        {% if user.equipment.exists %}
+            <div class="divider"></div>
+            <h3 class="font-semibold text-lg mb-3">Available Equipment</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for equipment in user.equipment.all %}
+                    <span class="badge badge-outline badge-lg">
+                        {% if equipment.piece_name and equipment.piece_name != "None" %}
+                            {{ equipment.piece_name }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="divider"></div>
+            <p class="text-gray-400">No equipment information available.</p>
+        {% endif %}
+    </div>
     
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Goals</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <span class="text-sm text-gray-400">Competition Date</span>
+                <p class="font-medium">{% if user.profile.competition_date and user.profile.competition_date != "None" %}<span class="badge badge-secondary">{{ user.profile.competition_date }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-400">Weight Class</span>
+                <p class="font-medium">{% if user.profile.desired_weight_class and user.profile.desired_weight_class != "None" %}<span class="badge badge-accent">{{ user.profile.desired_weight_class }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        {% if user.goals.exists %}
+            <div class="space-y-4">
+                {% for goal in user.goals.all|dictsort:"type" %}
+                    <div class="border-l-4 {% if goal.type == 'primary' %}border-primary{% elif goal.type == 'long_term' %}border-secondary{% else %}border-accent{% endif %} pl-4 py-2">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="badge {% if goal.type == 'primary' %}badge-primary{% elif goal.type == 'long_term' %}badge-secondary{% else %}badge-accent{% endif %} badge-sm">
+                                {{ goal.get_type_display }}
+                            </span>
+                        </div>
+                        <p class="text-base">
+                            {% if goal.description and goal.description != "None" %}
+                                {{ goal.description }}
+                            {% else %}
+                                <span class="text-gray-500">Not specified</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400">No goals information available.</p>
+        {% endif %}
+    </div>
+    
+        </div>
+        
+        <div class="space-y-6">
+    
+    <h2 class="text-2xl font-semibold mb-4">Coaching Preferences</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        {% if user.coaching_preference %}
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <span class="text-sm text-gray-400">Coaching Style</span>
+                    <p class="font-medium">{% if user.coaching_preference.style and user.coaching_preference.style != "None" %}{{ user.coaching_preference.style }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">Check-In Frequency</span>
+                    <p class="font-medium">{% if user.coaching_preference.check_in_frequency and user.coaching_preference.check_in_frequency != "None" %}{{ user.coaching_preference.check_in_frequency }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-sm text-gray-400">Communication Method</span>
+                    <p class="font-medium">{% if user.coaching_preference.communication_method and user.coaching_preference.communication_method != "None" %}{{ user.coaching_preference.communication_method }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">Video Analysis</span>
+                    <p class="font-medium">{% if user.coaching_preference.video_analysis %}Yes{% else %}No{% endif %}</p>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-400">No coaching preference information available.</p>
+        {% endif %}
+    </div>
+    
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Nutrition Information</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        {% if user.nutrition %}
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <span class="text-sm text-gray-400">Nutrition Plan</span>
+                    <p class="font-medium">{% if user.nutrition.plan %}Yes{% else %}No{% endif %}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">Weight Management</span>
+                    <p class="font-medium">{% if user.nutrition.weight_management and user.nutrition.weight_management != "None" %}{{ user.nutrition.weight_management|title }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <span class="text-sm text-gray-400">Calories Per Day</span>
+                    <p class="font-medium">{% if user.nutrition.calories_per_day is not None %}<span class="badge badge-outline">{{ user.nutrition.calories_per_day }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">Protein Per Day (g)</span>
+                    <p class="font-medium">{% if user.nutrition.protein_per_day is not None %}<span class="badge badge-outline">{{ user.nutrition.protein_per_day }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <span class="text-sm text-gray-400">Sleep (hours/night)</span>
+                    <p class="font-medium">{% if user.nutrition.sleep_habits is not None %}<span class="badge badge-primary">{{ user.nutrition.sleep_habits }}</span>{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-400">Stress Level</span>
+                    <p class="font-medium">{% if user.nutrition.stress and user.nutrition.stress != "None" %}{{ user.nutrition.stress|title }}{% else %}<span class="text-gray-500">Not specified</span>{% endif %}</p>
+                </div>
+            </div>
+            {% if user.nutrition.supplements and user.nutrition.supplements != "None" %}
+                <div class="divider"></div>
+                <div>
+                    <span class="text-sm text-gray-400">Supplements</span>
+                    <p class="font-medium mt-2">{{ user.nutrition.supplements }}</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-gray-400">No nutrition information available.</p>
+        {% endif %}
+    </div>
+    
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Health Information</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        {% if user.health %}
+            <div class="mb-4">
+                <span class="text-sm text-gray-400">Cleared for Training</span>
+                <p class="font-medium">
+                    <span class="badge {% if user.health.cleared_for_training %}badge-success{% else %}badge-error{% endif %}">
+                        {% if user.health.cleared_for_training %}Yes{% else %}No{% endif %}
+                    </span>
+                </p>
+            </div>
+            
+            {% if user.health.conditions and user.health.conditions != "None" %}
+                <div class="mb-4">
+                    <span class="text-sm text-gray-400">Health Conditions</span>
+                    <p class="font-medium mt-2">{{ user.health.conditions }}</p>
+                </div>
+            {% endif %}
+            
+            {% if user.health.mobility_issues and user.health.mobility_issues != "None" %}
+                <div class="mb-4">
+                    <span class="text-sm text-gray-400">Mobility Issues</span>
+                    <p class="font-medium mt-2">{{ user.health.mobility_issues }}</p>
+                </div>
+            {% endif %}
+            
+            {% if user.injuries.exists %}
+                <div class="divider"></div>
+                <h3 class="font-semibold text-lg mb-3">Injuries</h3>
+                <div class="space-y-4">
+                    {% for injury in user.injuries.all|dictsort:"resolved" %}
+                        <div class="border-l-4 {% if injury.resolved %}border-success{% else %}border-warning{% endif %} pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="badge {% if injury.resolved %}badge-success{% else %}badge-warning{% endif %} badge-sm">
+                                    {% if injury.resolved %}Resolved{% else %}Active{% endif %}
+                                </span>
+                            </div>
+                            <p class="text-base mb-2">{{ injury.info }}</p>
+                            <div class="text-sm text-gray-400">
+                                <span>Started: {{ injury.started }}</span>
+                                {% if injury.ended %}
+                                    <span class="ml-3">Ended: {{ injury.ended }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-gray-400">No health information available.</p>
+        {% endif %}
+    </div>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Social Media</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        {% if user.social_media.exists %}
+            <div class="flex flex-wrap gap-2">
+                {% for sm in user.social_media.all %}
+                    <a href="{{ sm.link }}" target="_blank" class="badge badge-outline badge-lg">
+                        {{ sm.platform }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400">No social media information available.</p>
+        {% endif %}
+    </div>
+    
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Additional Resources</h2>
+    <div class="p-6 rounded shadow bg-base-200">
+        {% if user.profile.recent_training_log and user.profile.recent_training_log != "None" %}
+            <div class="mb-4">
+                <span class="text-sm text-gray-400">Recent Training Log</span>
+                <p class="font-medium mt-2">
+                    <a href="{{ user.profile.recent_training_log }}" target="_blank" class="link link-primary">
+                        View Training Log →
+                    </a>
+                </p>
+            </div>
+        {% endif %}
+        
+        {% if user.video_links.exists %}
+            {% if user.profile.recent_training_log and user.profile.recent_training_log != "None" %}
+                <div class="divider"></div>
+            {% endif %}
+            <h3 class="font-semibold text-lg mb-3">Video Links</h3>
+            <div class="space-y-2">
+                {% for video in user.video_links.all %}
+                    <div>
+                        <a href="{{ video.link }}" target="_blank" class="link link-primary flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+                            </svg>
+                            Video #{{ forloop.counter }}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if not user.profile.recent_training_log or user.profile.recent_training_log == "None" %}
+            {% if not user.video_links.exists %}
+                <p class="text-gray-400">No additional resources available.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+        </div>
+        <!-- End Right Column -->
+    </div>
+    <!-- End Grid -->
 
 </div>
 {% endblock %}

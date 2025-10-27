@@ -155,7 +155,7 @@ class CoachingPreference(models.Model):
 
 class Equipment(models.Model):
     """Equipment model to store user's equipment."""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='equipment')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='equipment')
     piece_name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -173,13 +173,13 @@ class SocialMedia(models.Model):
     """Social media model to store user's social media links."""
 
     PLATFORMS = [
-        ('instagram', 'Instagram'),
-        ('facebook', 'Facebook'),
-        ('twitter', 'Twitter'),
-        ('tiktok', 'TikTok'),
-        ('youtube', 'YouTube'),
-        ('snapchat', 'Snapchat'),
-        ('other', 'Other'),
+        ('Instagram', 'Instagram'),
+        ('Facebook', 'Facebook'),
+        ('Twitter', 'Twitter'),
+        ('TikTok', 'TikTok'),
+        ('YouTube', 'YouTube'),
+        ('Snapchat', 'Snapchat'),
+        ('Other', 'Other'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_media')
     platform = models.CharField(max_length=100, choices=PLATFORMS)

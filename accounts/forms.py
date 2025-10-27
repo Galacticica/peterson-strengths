@@ -256,7 +256,7 @@ class HealthForm(forms.Form):
 
 class CoachingPreferenceForm(forms.Form):
     style = forms.ChoiceField(
-        choices=[('hands_on', 'Hands-on'), ('hands_off', 'Hands-off'), ('balanced', 'Balanced')],
+        choices=[('Hands On', 'Hands-on'), ('Hands Off', 'Hands-off'), ('Balanced', 'Balanced')],
         required=True,
         widget=forms.Select(attrs={"class": "form-control"}),
         label="Coaching Style"
