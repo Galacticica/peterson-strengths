@@ -4,41 +4,117 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
     <h2 class="text-4xl font-bold mb-8 text-center">Welcome {{ user.first_name }} {{ user.last_name }}</h2>
     
-    <h2 class="text-2xl font-semibold">Profile Information</h2>
-    <div class="p-2 rounded shadow max-w-md mx-auto"></div>
+    <h2 class="text-2xl font-semibold mb-4">Profile Information</h2>
+    <div class="p-4 rounded shadow max-w-md">
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Email:</span>
-            <span>{{ user.email }}</span>
+            <span>{% if user.email %}{{ user.email }}{% else %}Not specified{% endif %}</span>
         </div>
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Phone Number:</span>
-            <span>{{ user.profile.phone_number }}</span>
+            <span>{% if user.profile.phone_number and user.profile.phone_number != "None" %}{{ user.profile.phone_number }}{% else %}Not specified{% endif %}</span>
         </div>
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Date of Birth:</span>
-            <span>{{ user.profile.dob }}</span>
-            <span class="ml-2 text-sm text-gray-200">({{ user.profile.age }} years old)</span>
+            <span>{% if user.profile.dob and user.profile.dob != "None" %}{{ user.profile.dob }}{% else %}Not specified{% endif %}</span>
+            {% if user.profile.age %}
+                <span class="ml-2 text-sm text-gray-200">({{ user.profile.age }} years old)</span>
+            {% endif %}
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Gender:</span>
+            <span>{% if user.profile.gender and user.profile.gender != "None" %}{{ user.profile.gender|title }}{% else %}Not specified{% endif %}</span>
         </div>
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Height:</span>
-            <span>{{ user.profile.height }} in</span>
+            <span>{% if user.profile.height is not None %}{{ user.profile.height }} in{% else %}Not specified{% endif %}</span>
         </div>
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Weight:</span>
-            <span>{{ user.profile.weight }} lbs</span>
+            <span>{% if user.profile.weight is not None %}{{ user.profile.weight }} lbs{% else %}Not specified{% endif %}</span>
         </div>
         <div class="flex items-center mb-3">
             <span class="font-medium w-40">Location:</span>
-            <span>{{ user.profile.location }}</span>
-            <span class="ml-2 text-sm text-gray-200">({{ user.profile.timezone }})</span>
+            <span>{% if user.profile.location and user.profile.location != "None" %}{{ user.profile.location }}{% else %}Not specified{% endif %}</span>
+            {% if user.profile.timezone and user.profile.timezone != "None" %}
+                <span class="ml-2 text-sm text-gray-200">({{ user.profile.timezone }})</span>
+            {% endif %}
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Competition Date:</span>
+            <span>{% if user.profile.competition_date and user.profile.competition_date != "None" %}{{ user.profile.competition_date }}{% else %}Not specified{% endif %}</span>
+        </div>
+        <div class="flex items-center mb-3">
+            <span class="font-medium w-40">Desired Weight Class:</span>
+            <span>{% if user.profile.desired_weight_class and user.profile.desired_weight_class != "None" %}{{ user.profile.desired_weight_class }}{% else %}Not specified{% endif %}</span>
         </div>
     </div>
-    <h2 class="text-2xl font-semibold">Previous Experience</h2>
-    <h2 class="text-2xl font-semibold">Equipment Access</h2>
+    
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Previous Experience</h2>
+    <div class="p-4 rounded shadow max-w-md">
+        {% if user.experiences.exists %}
+            {% for experience in user.experiences.all %}
+                <div class="mb-6 pb-4 border-b border-gray-600 last:border-0">
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Experience Level:</span>
+                        <span>{% if experience.level and experience.level != "None" %}{{ experience.level }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Time Lifted:</span>
+                        <span>{% if experience.time_lifted and experience.time_lifted != "None" %}{{ experience.time_lifted }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Current Program:</span>
+                        <span>{% if experience.current_program and experience.current_program != "None" %}{{ experience.current_program }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Days per Week:</span>
+                        <span>{% if experience.days_per_week is not None %}{{ experience.days_per_week }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Preferred Days:</span>
+                        <span>{% if experience.preffered_days and experience.preffered_days != "None" %}{{ experience.preffered_days }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Squat Est. 1RM:</span>
+                        <span>{% if experience.squat_est is not None %}{{ experience.squat_est }} lbs{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Bench Est. 1RM:</span>
+                        <span>{% if experience.bench_est is not None %}{{ experience.bench_est }} lbs{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <span class="font-medium w-40">Deadlift Est. 1RM:</span>
+                        <span>{% if experience.deadlift_est is not None %}{{ experience.deadlift_est }} lbs{% else %}Not specified{% endif %}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-400">No experience information available.</p>
+        {% endif %}
+        
+        {% if user.previous_coaches.exists %}
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Previous Coaches:</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    {% for coach in user.previous_coaches.all %}
+                        <li>{% if coach.coach_name and coach.coach_name != "None" %}{{ coach.coach_name }}{% else %}Not specified{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Previous Coaches:</h3>
+                <p class="text-gray-400">No previous coaches listed.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <h2 class="text-2xl font-semibold mt-8">Equipment Access</h2>
     <h2 class="text-2xl font-semibold">Goals</h2>
     <h2 class="text-2xl font-semibold">Coaching Preferences</h2>
     <h2 class="text-2xl font-semibold">Nutrition Information</h2>
-    <h2 class="text-2xl font-semibold">Health Information</h2>
+    <h2 class="text-2xl font-semibold">Health Information</h2>i 
     <h2 class="text-2xl font-semibold">Social Media</h2>
     <h2 class="text-2xl font-semibold">Miscellaneous</h2>
     

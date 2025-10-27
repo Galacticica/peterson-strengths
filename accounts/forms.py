@@ -124,7 +124,7 @@ class ProfileForm(forms.Form):
 
 class ExperienceForm(forms.Form):
     level = forms.ChoiceField(
-        choices=[('beginner', 'Beginner'), ('intermediate', 'Intermediate'), ('advanced', 'Advanced')],
+        choices=[('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')],
         required=True,
         widget=forms.Select(attrs={"class": "form-control"}),
         label="Experience Level"
