@@ -2,34 +2,63 @@
 {% load static %}
 {% block content %}
 
-<div class="min-h-[80vh] flex items-center justify-center bg-base-200">
-    <div class="max-w-2xl mx-auto px-6 text-center">
-        <div class="mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-primary mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+<div class="min-h-[80vh] bg-base-200 py-12">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <h1 class="text-5xl font-bold mb-4">Shop Coming Soon</h1>
-            <p class="text-xl text-gray-400 mb-8">
-                We're working hard to bring you an amazing shopping experience. Check back soon for exclusive Peterson Lifts merchandise and training gear!
+            <h1 class="text-5xl font-bold mb-4">Shop</h1>
+            <p class="text-xl text-gray-400">
+                Choose the perfect plan for your fitness journey
             </p>
         </div>
-        
-        <div class="card bg-base-100 shadow-xl mb-8">
-            <div class="card-body">
-                <h2 class="card-title text-2xl mb-4 justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Under Construction
-                </h2>
-                <p class="text-gray-400">
-                    Our shop page is currently under development. In the meantime, feel free to explore our other features and customize your training profile.
-                </p>
+
+        {% if products %}
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {% for product in products %}
+            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl justify-center mb-4">{{ product.name }}</h2>
+                    <p class="text-center text-gray-400 mb-6">{{ product.short_description }}</p>
+                    
+                    <!-- Price Display -->
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-primary">
+                            ${{ product.price|floatformat:2 }}{% if product.monthly %}<span class="text-xl text-gray-400"> / mo</span>{% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions justify-center">
+                        <button class="btn btn-primary btn-wide">{% if product.monthly %}Choose Plan{% else %}Buy Now{% endif %}</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="card bg-base-100 shadow-xl mb-8">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4 justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        No Products Available
+                    </h2>
+                    <p class="text-gray-400">
+                        Check back soon for exclusive Peterson Lifts merchandise and training gear!
+                    </p>
+                </div>
             </div>
         </div>
+        {% endif %}
         
-        <div class="flex flex-wrap gap-4 justify-center">
-            <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+        <!-- Navigation Buttons -->
+        <div class="flex flex-wrap gap-4 justify-center mt-12">
+            <a href="{% url 'home' %}" class="btn btn-outline btn-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
