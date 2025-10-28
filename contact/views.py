@@ -20,7 +20,7 @@ def contact_view(request):
         if form.is_valid():
             _send_email(form.cleaned_data, request)
             if request.headers.get("HX-Request"):
-                return render(request, "contact/_form_partial.html", {
+                return render(request, "contact/partials/_form_partial.html", {
                     "form": ContactForm(),
                     "success": True
                 })
@@ -33,11 +33,6 @@ def contact_view(request):
     
 def _format_email_body(cleaned_data):
     """Format the email body with submission details."""
-
-    start_date = cleaned_data.get("start_date")
-    end_date = cleaned_data.get("end_date")
-    formatted_start = start_date.strftime("%B %d, %Y") if start_date else "N/A"
-    formatted_end = end_date.strftime("%B %d, %Y") if end_date else "N/A"
     
     return ("A new message has been received from the contact form:\n\n"
         f"Name: {cleaned_data.get('name', '')}\n"
@@ -49,5 +44,4 @@ def _send_email(cleaned_data, request):
     """Send an email with the contact form submission details."""
 
     email_body = _format_email_body(cleaned_data)
-    # Implement email sending logic here
     print("Sending email with body:\n", email_body)

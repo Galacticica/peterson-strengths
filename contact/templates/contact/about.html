@@ -52,32 +52,34 @@
                     <p class="text-lg text-gray-300 text-center mb-6">
                         If you're interested in personalized coaching, have questions about training, or just want to connect, feel free to reach out! 
                     </p>
-                    <form method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        <div class="mb-4 w-full">
-                            <label for="id_name" class="block font-semibold mb-1">Name</label>
-                            <input type="text" name="name" id="id_name" class="input input-bordered w-full" placeholder="Your name" />
-                            {% if form.name.errors %}
-                                <div class="text-red-500 text-sm mt-1">{{ form.name.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-4 w-full">
-                            <label for="id_email" class="block font-semibold mb-1">Email</label>
-                            <input type="email" name="email" id="id_email" class="input input-bordered w-full" placeholder="Your email" />
-                            {% if form.email.errors %}
-                                <div class="text-red-500 text-sm mt-1">{{ form.email.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-4 w-full">
-                            <label for="id_message" class="block font-semibold mb-1">Your Message</label>
-                            <textarea id="id_message" name="message" class="textarea textarea-bordered w-full" rows="4" placeholder="Type your message here..."></textarea>
-                            {% if form.message.errors %}
-                                <div class="text-red-500 text-sm mt-1">{{ form.message.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="flex justify-center mt-6">
-                            <button class="btn btn-primary btn-wide" type="submit">Send Message</button>
+                    <form method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="#form-content" hx-swap="innerHTML" id="contact-form">
+                        <div id="form-content">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            <div class="mb-4 w-full">
+                                <label for="id_name" class="block font-semibold mb-1">Name</label>
+                                <input type="text" name="name" id="id_name" class="input input-bordered w-full" placeholder="Your name" />
+                                {% if form.name.errors %}
+                                    <div class="text-red-500 text-sm mt-1">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-4 w-full">
+                                <label for="id_email" class="block font-semibold mb-1">Email</label>
+                                <input type="email" name="email" id="id_email" class="input input-bordered w-full" placeholder="Your email" />
+                                {% if form.email.errors %}
+                                    <div class="text-red-500 text-sm mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-4 w-full">
+                                <label for="id_message" class="block font-semibold mb-1">Your Message</label>
+                                <textarea id="id_message" name="message" class="textarea textarea-bordered w-full" rows="4" placeholder="Type your message here..."></textarea>
+                                {% if form.message.errors %}
+                                    <div class="text-red-500 text-sm mt-1">{{ form.message.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-center mt-6">
+                                <button class="btn btn-primary btn-wide" type="submit">Send Message</button>
+                            </div>
                         </div>
                     </form>
                 </div>

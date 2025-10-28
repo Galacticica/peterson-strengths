@@ -1,3 +1,24 @@
+{% if success %}
+<div class="alert alert-success mb-4" id="success-message">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>Your message has been sent successfully! We'll get back to you soon.</span>
+</div>
+<script>
+    setTimeout(function() {
+        var successMsg = document.getElementById('success-message');
+        if (successMsg) {
+            successMsg.style.transition = 'opacity 0.5s ease';
+            successMsg.style.opacity = '0';
+            setTimeout(function() {
+                successMsg.remove();
+            }, 500);
+        }
+    }, 5000);
+</script>
+{% endif %}
+
 {% csrf_token %}
 {{ form.non_field_errors }}
 <div class="mb-4 w-full">
@@ -21,6 +42,6 @@
         <div class="text-red-500 text-sm mt-1">{{ form.message.errors }}</div>
     {% endif %}
 </div>
-<div class="flex justify-between mt-6">
-    <button class="btn btn-primary" type="submit">Send Message</button>
+<div class="flex justify-center mt-6">
+    <button class="btn btn-primary btn-wide" type="submit">Send Message</button>
 </div>
