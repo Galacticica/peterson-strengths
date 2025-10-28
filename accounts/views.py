@@ -59,7 +59,6 @@ class MySignupView(FormView):
     def form_valid(self, form):
         user = User.objects.create(
             email=form.cleaned_data["email"],
-            username=form.cleaned_data["email"],
             first_name=form.cleaned_data["first_name"],
             last_name=form.cleaned_data["last_name"],
             password=make_password(form.cleaned_data["password"]), 
@@ -446,7 +445,7 @@ def extras_step(request):
                 instance.save()
             for obj in video_link_formset.deleted_objects:
                 obj.delete()
-            return redirect("/account/profile/")
+            return redirect("/profile/")
     else:
         initial_data = {}
         if profile_instance:
