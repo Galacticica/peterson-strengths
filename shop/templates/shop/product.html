@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="min-h-[80vh] bg-base-200 py-12">
+    <div class="container mx-auto px-6">
+        <div class="mb-8">
+            <a href="{% url 'shop' %}" class="btn btn-outline">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Shop
+            </a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h1 class="text-4xl font-bold text-center mb-6">{{ product.name }}</h1>
+                    
+                    <div class="text-center mb-8">
+                        <div class="text-5xl font-bold text-primary">
+                            ${{ product.price|floatformat:2 }}{% if product.monthly %}<span class="text-2xl text-gray-400"> / mo</span>{% endif %}
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="prose prose-lg max-w-none mb-8">
+                        <h2 class="text-2xl font-bold mb-4">Details</h2>
+                        <div class="text-gray-300 whitespace-pre-line">{{ product.long_description }}</div>
+                    </div>
+                    
+                    <div class="card-actions justify-center mt-8">
+                        <button class="btn btn-primary btn-lg btn-wide">
+                            {% if product.monthly %}Choose Plan{% else %}Buy Now{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-4 justify-center mt-12">
+            <a href="{% url 'home' %}" class="btn btn-outline btn-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Back to Home
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile_page' %}" class="btn btn-secondary btn-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                View Profile
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -30,7 +30,8 @@
                         </div>
                     </div>
                     
-                    <div class="card-actions justify-center">
+                    <div class="card-actions justify-center gap-2">
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-outline btn-wide">Learn More</a>
                         <button class="btn btn-primary btn-wide">{% if product.monthly %}Choose Plan{% else %}Buy Now{% endif %}</button>
                     </div>
                 </div>
