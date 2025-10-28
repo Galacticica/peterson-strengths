@@ -1,9 +1,9 @@
 - [X] Profile Page
 - [X] Information Form
 - [X] Navigation for Information Form
-- [ ] Shop Page
+- [X] Shop Page
 - [ ] Payment
-- [ ] Client Testimonials
+- [X] Client Testimonials
 - [ ] Email Notifications 
 
 
