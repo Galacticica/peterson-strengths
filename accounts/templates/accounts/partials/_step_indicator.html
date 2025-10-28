@@ -1,0 +1,70 @@
+{% comment %}
+Step indicator navigation for multi-step form
+Shows all steps and allows jumping between completed steps
+Current step is highlighted
+{% endcomment %}
+
+<div class="w-full max-w-7xl mx-auto mb-8 px-6">
+  <ul class="steps steps-horizontal w-full min-w-full">
+    <li class="step {% if current_step == 'profile' %}step-primary{% elif step_order.profile <= current_step_order %}step-success{% endif %}" 
+        data-step="profile">
+      <a href="{% url 'profile_step' %}" class="{% if current_step == 'profile' %}font-bold{% endif %}">
+        Profile
+      </a>
+    </li>
+    <li class="step {% if current_step == 'experience' %}step-primary{% elif step_order.experience <= current_step_order %}step-success{% endif %}"
+        data-step="experience">
+      <a href="{% url 'experience_step' %}" class="{% if current_step == 'experience' %}font-bold{% endif %}">
+        Experience
+      </a>
+    </li>
+    <li class="step {% if current_step == 'goal' %}step-primary{% elif step_order.goal <= current_step_order %}step-success{% endif %}"
+        data-step="goal">
+      <a href="{% url 'goal_step' %}" class="{% if current_step == 'goal' %}font-bold{% endif %}">
+        Goals
+      </a>
+    </li>
+    <li class="step {% if current_step == 'next_comp' %}step-primary{% elif step_order.next_comp <= current_step_order %}step-success{% endif %}"
+        data-step="next_comp">
+      <a href="{% url 'next_comp_step' %}" class="{% if current_step == 'next_comp' %}font-bold{% endif %}">
+        Competition
+      </a>
+    </li>
+    <li class="step {% if current_step == 'nutrition' %}step-primary{% elif step_order.nutrition <= current_step_order %}step-success{% endif %}"
+        data-step="nutrition">
+      <a href="{% url 'nutrition_step' %}" class="{% if current_step == 'nutrition' %}font-bold{% endif %}">
+        Nutrition
+      </a>
+    </li>
+    <li class="step {% if current_step == 'health' %}step-primary{% elif step_order.health <= current_step_order %}step-success{% endif %}"
+        data-step="health">
+      <a href="{% url 'health_step' %}" class="{% if current_step == 'health' %}font-bold{% endif %}">
+        Health
+      </a>
+    </li>
+    <li class="step {% if current_step == 'preference' %}step-primary{% elif step_order.preference <= current_step_order %}step-success{% endif %}"
+        data-step="preference">
+      <a href="{% url 'preference_step' %}" class="{% if current_step == 'preference' %}font-bold{% endif %}">
+        Preferences
+      </a>
+    </li>
+    <li class="step {% if current_step == 'equipment' %}step-primary{% elif step_order.equipment <= current_step_order %}step-success{% endif %}"
+        data-step="equipment">
+      <a href="{% url 'equipment_step' %}" class="{% if current_step == 'equipment' %}font-bold{% endif %}">
+        Equipment
+      </a>
+    </li>
+    <li class="step {% if current_step == 'socials' %}step-primary{% elif step_order.socials <= current_step_order %}step-success{% endif %}"
+        data-step="socials">
+      <a href="{% url 'socials_step' %}" class="{% if current_step == 'socials' %}font-bold{% endif %}">
+        Social Media
+      </a>
+    </li>
+    <li class="step {% if current_step == 'extras' %}step-primary{% elif step_order.extras <= current_step_order %}step-success{% endif %}"
+        data-step="extras">
+      <a href="{% url 'extras_step' %}" class="{% if current_step == 'extras' %}font-bold{% endif %}">
+        Additional Info
+      </a>
+    </li>
+  </ul>
+</div>

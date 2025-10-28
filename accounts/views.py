@@ -20,17 +20,42 @@ from . import models
 
 User = get_user_model()
 
+# Step order mapping for step indicator
+STEP_ORDER = {
+    'profile': 1,
+    'experience': 2,
+    'goal': 3,
+    'next_comp': 4,
+    'nutrition': 5,
+    'health': 6,
+    'preference': 7,
+    'equipment': 8,
+    'socials': 9,
+    'extras': 10,
+}
+
+def get_step_context(current_step):
+    """Helper function to get step context for templates."""
+    return {
+        'current_step': current_step,
+        'current_step_order': STEP_ORDER.get(current_step, 0),
+        'step_order': STEP_ORDER,
+    }
+
 class MyLoginView(LoginView):
     """Custom login view using MyLoginForm."""
     form_class = forms.LoginForm
     template_name = "accounts/login.html"
     redirect_authenticated_user = True
+    
+    def get_success_url(self):
+        return "/account/profile"
 
 class MySignupView(FormView):
     """Custom signup view using SignupForm."""
     form_class = forms.SignupForm
     template_name = "accounts/signup.html"
-    success_url = "/" 
+    success_url = "/account/profile" 
 
     def form_valid(self, form):
         user = User.objects.create(
@@ -50,7 +75,7 @@ class MyLogoutView(View):
     """Custom logout view."""
     def get(self, request, *args, **kwargs):
         logout(request)  
-        return redirect("/")  
+        return redirect("/account/login/")  
 
 def profile_step(request):
     '''
@@ -75,7 +100,9 @@ def profile_step(request):
             field: getattr(profile_instance, field)
             for field in forms.ProfileForm.base_fields
         } if profile_instance else None)
-    return render(request, "accounts/profile_step.html", {"form": form})
+    context = {"form": form}
+    context.update(get_step_context('profile'))
+    return render(request, "accounts/profile_step.html", context)
 
 def experience_step(request):
     '''
@@ -119,10 +146,12 @@ def experience_step(request):
         } if experience_instance else None)
         coach_formset = PreviousCoachFormSet(queryset=models.PreviousCoach.objects.filter(user=request.user))
 
-    return render(request, "accounts/experience_step.html", {
+    context = {
         "exp_form": exp_form,
         "coach_formset": coach_formset,
-    })
+    }
+    context.update(get_step_context('experience'))
+    return render(request, "accounts/experience_step.html", context)
 
 
 def goal_step(request):
@@ -151,7 +180,9 @@ def goal_step(request):
             return redirect("next_comp_step")
     else:
         goal_formset = GoalFormSet(queryset=models.Goal.objects.filter(user=request.user))
-    return render(request, "accounts/goal_step.html", {"goal_formset": goal_formset})
+    context = {"goal_formset": goal_formset}
+    context.update(get_step_context('goal'))
+    return render(request, "accounts/goal_step.html", context)
 
 def next_comp_step(request):
     '''
@@ -183,7 +214,9 @@ def next_comp_step(request):
             if profile_instance.desired_weight_class:
                 initial_data['desired_weight_class'] = profile_instance.desired_weight_class
         form = forms.CompetitionForm(initial=initial_data if initial_data else None)
-    return render(request, "accounts/next_comp_step.html", {"form": form})
+    context = {"form": form}
+    context.update(get_step_context('next_comp'))
+    return render(request, "accounts/next_comp_step.html", context)
 
 
 def nutrition_step(request):
@@ -209,7 +242,9 @@ def nutrition_step(request):
             field: getattr(nutrition_instance, field)
             for field in forms.NutritionForm.base_fields
         } if nutrition_instance else None)
-    return render(request, "accounts/nutrition_step.html", {"form": form})
+    context = {"form": form}
+    context.update(get_step_context('nutrition'))
+    return render(request, "accounts/nutrition_step.html", context)
 
 
 def health_step(request):
@@ -254,10 +289,12 @@ def health_step(request):
         } if health_instance else None)
         injury_formset = InjuryFormSet(queryset=models.Injury.objects.filter(user=request.user))
 
-    return render(request, "accounts/health_step.html", {
+    context = {
         "health_form": health_form,
         "injury_formset": injury_formset,
-    })
+    }
+    context.update(get_step_context('health'))
+    return render(request, "accounts/health_step.html", context)
 
 
 def preference_step(request):
@@ -283,7 +320,9 @@ def preference_step(request):
             field: getattr(preference_instance, field)
             for field in forms.CoachingPreferenceForm.base_fields
         } if preference_instance else None)
-    return render(request, "accounts/preference_step.html", {"form": form})
+    context = {"form": form}
+    context.update(get_step_context('preference'))
+    return render(request, "accounts/preference_step.html", context)
 
 def equipment_step(request):
     '''
@@ -334,10 +373,12 @@ def equipment_step(request):
         gear_form = forms.GearForm(initial=initial_data if initial_data else None)
         equipment_formset = EquipmentFormSet(queryset=models.Equipment.objects.filter(user=request.user))
 
-    return render(request, "accounts/equipment_step.html", {
+    context = {
         "gear_form": gear_form,
         "equipment_formset": equipment_formset,
-    })
+    }
+    context.update(get_step_context('equipment'))
+    return render(request, "accounts/equipment_step.html", context)
 
 def socials_step(request):
     '''
@@ -366,7 +407,9 @@ def socials_step(request):
             return redirect("extras_step")  
     else:
         social_formset = SocialMediaFormSet(queryset=models.SocialMedia.objects.filter(user=request.user))
-    return render(request, "accounts/socials_step.html", {"social_formset": social_formset})
+    context = {"social_formset": social_formset}
+    context.update(get_step_context('socials'))
+    return render(request, "accounts/socials_step.html", context)
 
 def extras_step(request):
     '''
@@ -404,7 +447,7 @@ def extras_step(request):
                 instance.save()
             for obj in video_link_formset.deleted_objects:
                 obj.delete()
-            return redirect("/")
+            return redirect("/account/profile/")
     else:
         initial_data = {}
         if profile_instance:
@@ -413,10 +456,12 @@ def extras_step(request):
         extras_form = forms.ExtrasForm(initial=initial_data if initial_data else None)
         video_link_formset = VideoLinkFormSet(queryset=models.VideoLink.objects.filter(user=request.user))
 
-    return render(request, "accounts/extras_step.html", {
+    context = {
         "extras_form": extras_form,
         "video_link_formset": video_link_formset,
-    })
+    }
+    context.update(get_step_context('extras'))
+    return render(request, "accounts/extras_step.html", context)
 
 
 def profile_view(request):

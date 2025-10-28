@@ -180,21 +180,59 @@
         
         {% if user.goals.exists %}
             <div class="space-y-4">
-                {% for goal in user.goals.all|dictsort:"type" %}
-                    <div class="border-l-4 {% if goal.type == 'primary' %}border-primary{% elif goal.type == 'long_term' %}border-secondary{% else %}border-accent{% endif %} pl-4 py-2">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="badge {% if goal.type == 'primary' %}badge-primary{% elif goal.type == 'long_term' %}badge-secondary{% else %}badge-accent{% endif %} badge-sm">
-                                {{ goal.get_type_display }}
-                            </span>
+                {% for goal in user.goals.all %}
+                    {% if goal.type == 'primary' %}
+                        <div class="border-l-4 border-primary pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="badge badge-primary badge-sm">
+                                    {{ goal.get_type_display }}
+                                </span>
+                            </div>
+                            <p class="text-base">
+                                {% if goal.description and goal.description != "None" %}
+                                    {{ goal.description }}
+                                {% else %}
+                                    <span class="text-gray-500">Not specified</span>
+                                {% endif %}
+                            </p>
                         </div>
-                        <p class="text-base">
-                            {% if goal.description and goal.description != "None" %}
-                                {{ goal.description }}
-                            {% else %}
-                                <span class="text-gray-500">Not specified</span>
-                            {% endif %}
-                        </p>
-                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% for goal in user.goals.all %}
+                    {% if goal.type == 'long_term' %}
+                        <div class="border-l-4 border-secondary pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="badge badge-secondary badge-sm">
+                                    {{ goal.get_type_display }}
+                                </span>
+                            </div>
+                            <p class="text-base">
+                                {% if goal.description and goal.description != "None" %}
+                                    {{ goal.description }}
+                                {% else %}
+                                    <span class="text-gray-500">Not specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% for goal in user.goals.all %}
+                    {% if goal.type == 'short_term' %}
+                        <div class="border-l-4 border-accent pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="badge badge-accent badge-sm">
+                                    {{ goal.get_type_display }}
+                                </span>
+                            </div>
+                            <p class="text-base">
+                                {% if goal.description and goal.description != "None" %}
+                                    {{ goal.description }}
+                                {% else %}
+                                    <span class="text-gray-500">Not specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% else %}
@@ -391,6 +429,22 @@
         <!-- End Right Column -->
     </div>
     <!-- End Grid -->
+    
+    <!-- Edit Profile and Logout Buttons -->
+    <div class="flex justify-center gap-4 mt-8">
+        <a href="{% url 'profile_step' %}" class="btn btn-primary btn-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+            Edit Profile
+        </a>
+        <a href="{% url 'logout_page' %}" class="btn btn-error btn-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+            </svg>
+            Logout
+        </a>
+    </div>
 
 </div>
 {% endblock %}
