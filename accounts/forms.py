@@ -262,7 +262,7 @@ class CoachingPreferenceForm(forms.Form):
         label="Coaching Style"
     )
     check_in_frequency = forms.ChoiceField(
-        choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('biweekly', 'Biweekly'), ('monthly', 'Monthly')],
+        choices=[('Daily', 'Daily'), ('Weekly', 'Weekly'), ('Biweekly', 'Biweekly'), ('Monthly', 'Monthly')],
         required=True,
         widget=forms.Select(attrs={"class": "form-control"}),
         label="Check-in Frequency"
