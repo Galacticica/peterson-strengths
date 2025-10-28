@@ -20,7 +20,6 @@ from . import models
 
 User = get_user_model()
 
-# Step order mapping for step indicator
 STEP_ORDER = {
     'profile': 1,
     'experience': 2,
@@ -49,13 +48,13 @@ class MyLoginView(LoginView):
     redirect_authenticated_user = True
     
     def get_success_url(self):
-        return "/account/profile"
+        return "/profile"
 
 class MySignupView(FormView):
     """Custom signup view using SignupForm."""
     form_class = forms.SignupForm
     template_name = "accounts/signup.html"
-    success_url = "/account/profile" 
+    success_url = "/profile" 
 
     def form_valid(self, form):
         user = User.objects.create(
@@ -75,7 +74,7 @@ class MyLogoutView(View):
     """Custom logout view."""
     def get(self, request, *args, **kwargs):
         logout(request)  
-        return redirect("/account/login/")  
+        return redirect("/login/")  
 
 def profile_step(request):
     '''

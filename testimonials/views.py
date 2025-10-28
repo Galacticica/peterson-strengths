@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def review_view(request):
+    return render(request, 'testimonials/reviews.html')
