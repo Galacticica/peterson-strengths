@@ -6,7 +6,8 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="space-y-6">
-    
+
+    <!-- Personal Information Section -->
     <h2 class="text-2xl font-semibold mb-4">Personal Information</h2>
     <div class="p-6 rounded shadow bg-base-200">
         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -64,7 +65,8 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Previous Experience Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Previous Experience</h2>
     <div class="p-6 rounded shadow bg-base-200">
         {% if user.experiences.exists %}
@@ -129,7 +131,8 @@
             </div>
         {% endif %}
     </div>
-    
+
+    <!-- Equipment Access Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Equipment Access</h2>
     <div class="p-6 rounded shadow bg-base-200">
         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -163,6 +166,7 @@
         {% endif %}
     </div>
     
+    <!-- Goals Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Goals</h2>
     <div class="p-6 rounded shadow bg-base-200">
         <div class="grid grid-cols-2 gap-4 mb-6">
@@ -239,11 +243,10 @@
             <p class="text-gray-400">No goals information available.</p>
         {% endif %}
     </div>
-    
-        </div>
+</div>
         
-        <div class="space-y-6">
-    
+    <!-- Coaching Preferences Section -->
+    <div class="space-y-6">
     <h2 class="text-2xl font-semibold mb-4">Coaching Preferences</h2>
     <div class="p-6 rounded shadow bg-base-200">
         {% if user.coaching_preference %}
@@ -272,6 +275,7 @@
         {% endif %}
     </div>
     
+    <!-- Nutrition and Health Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Nutrition Information</h2>
     <div class="p-6 rounded shadow bg-base-200">
         {% if user.nutrition %}
@@ -316,7 +320,8 @@
             <p class="text-gray-400">No nutrition information available.</p>
         {% endif %}
     </div>
-    
+
+    <!-- Health Information Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Health Information</h2>
     <div class="p-6 rounded shadow bg-base-200">
         {% if user.health %}
@@ -370,6 +375,7 @@
         {% endif %}
     </div>
 
+    <!-- Social Media and Additional Resources Section -->
     <h2 class="text-2xl font-semibold mt-8 mb-4">Social Media</h2>
     <div class="p-6 rounded shadow bg-base-200">
         {% if user.social_media.exists %}
@@ -426,11 +432,8 @@
     </div>
     
         </div>
-        <!-- End Right Column -->
     </div>
-    <!-- End Grid -->
     
-    <!-- Edit Profile and Logout Buttons -->
     <div class="flex justify-center gap-4 mt-8">
         <a href="{% url 'profile_step' %}" class="btn btn-primary btn-lg">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
