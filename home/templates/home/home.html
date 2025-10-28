@@ -77,7 +77,6 @@
             {% for review in top_reviews %}
             <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <div class="card-body">
-                    <!-- Star Rating -->
                     <div class="flex justify-center mb-4">
                         {% for i in "12345" %}
                             {% if forloop.counter <= review.rating %}
@@ -105,10 +104,8 @@
                         <span class="ml-2 text-sm text-gray-400">({{ review.rating|floatformat }}/5)</span>
                     </div>
                     
-                    <!-- Review Content -->
                     <p class="text-gray-400 mb-4 italic">"{{ review.content }}"</p>
                     
-                    <!-- Author -->
                     <div class="text-center mt-auto pt-4 border-t border-base-300">
                         <p class="font-semibold">{{ review.display_author }}</p>
                     </div>
